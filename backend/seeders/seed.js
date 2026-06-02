@@ -4,7 +4,6 @@ const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const Booking = require('../models/Booking');
 
-// Load environment variables
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const seedDB = async () => {
@@ -14,12 +13,10 @@ const seedDB = async () => {
     await mongoose.connect(uri);
     console.log('MongoDB connected successfully.');
 
-    // Clear existing data in the bookings collection
     console.log('Clearing existing bookings from database...');
     await Booking.deleteMany({});
     console.log('Cleared existing bookings.');
 
-    // Read and parse JSON dataset
     const filePath = path.join(__dirname, '../Vehicle_Bookings.json');
     console.log(`Reading dataset from ${filePath}...`);
     if (!fs.existsSync(filePath)) {
@@ -35,18 +32,15 @@ const seedDB = async () => {
     const seenBookingIds = new Set();
 
     for (const item of bookingsData) {
-      // Skip empty or invalid items
       if (!item || !item.Booking_ID || item.Booking_ID === 'null') {
         continue;
       }
 
-      // Check for duplicate Booking_ID to prevent unique constraint validation errors
       if (seenBookingIds.has(item.Booking_ID)) {
         continue;
       }
       seenBookingIds.add(item.Booking_ID);
 
-      // Handle BOM characters in date key
       let rawDate = null;
       for (const key of Object.keys(item)) {
         if (key.includes('Date')) {
@@ -90,12 +84,10 @@ const seedDB = async () => {
 
     console.log(`Processing complete. Cleaned records count: ${cleanedBookings.length}`);
     console.log('Bulk inserting records into MongoDB (this may take a few seconds)...');
-    
-    // Bulk insert with Mongoose
+
     const result = await Booking.insertMany(cleanedBookings, { ordered: false });
     console.log(`Successfully seeded ${result.length} bookings into MongoDB.`);
 
-    // Seed default users for testing
     console.log('Seeding default testing users...');
     const User = require('../models/User');
     await User.deleteMany({});

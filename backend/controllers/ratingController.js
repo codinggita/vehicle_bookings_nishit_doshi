@@ -2,11 +2,6 @@ const Rating = require('../models/Rating');
 const ApiResponse = require('../utils/apiResponse');
 const asyncHandler = require('../utils/asyncHandler');
 
-/**
- * @desc    Create a new rating record
- * @route   POST /api/v1/ratings
- * @access  Private
- */
 const createRating = asyncHandler(async (req, res) => {
   const { ratingId, bookingId, driverRating, customerRating } = req.body;
 
@@ -29,11 +24,6 @@ const createRating = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, 'Rating created successfully.', rating, 201);
 });
 
-/**
- * @desc    Delete a rating record (hard delete)
- * @route   DELETE /api/v1/ratings/:ratingId
- * @access  Private
- */
 const deleteRating = asyncHandler(async (req, res) => {
   const { ratingId } = req.params;
 

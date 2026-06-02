@@ -2,17 +2,10 @@ const Booking = require('../models/Booking');
 const ApiResponse = require('../utils/apiResponse');
 const asyncHandler = require('../utils/asyncHandler');
 
-/**
- * @desc    Aggregate total revenue and distance by vehicle type
- * @route   GET /api/v1/analytics/revenue
- * @access  Private/Admin
- */
 const getRevenueStats = asyncHandler(async (req, res) => {
   const stats = await Booking.aggregate([
-    // Stage 1: Filter out soft deleted records
     { $match: { isDeleted: false } },
-    
-    // Stage 2: Group by vehicle type and sum fields
+
     {
       $group: {
         _id: '$vehicleType',
@@ -21,8 +14,7 @@ const getRevenueStats = asyncHandler(async (req, res) => {
         totalBookings: { $sum: 1 },
       },
     },
-    
-    // Stage 3: Project, clean names, and compute averages
+
     {
       $project: {
         _id: 0,
@@ -35,33 +27,24 @@ const getRevenueStats = asyncHandler(async (req, res) => {
         },
       },
     },
-    
-    // Stage 4: Sort by total revenue descending
+
     { $sort: { totalRevenue: -1 } },
   ]);
 
   return ApiResponse.success(res, 'Revenue and distance statistics by vehicle type retrieved.', stats, 200);
 });
 
-/**
- * @desc    Aggregate booking statuses distribution counts
- * @route   GET /api/v1/analytics/status-distribution
- * @access  Private/Admin
- */
 const getStatusDistribution = asyncHandler(async (req, res) => {
   const stats = await Booking.aggregate([
-    // Stage 1: Filter out soft deleted records
     { $match: { isDeleted: false } },
-    
-    // Stage 2: Group by status and count
+
     {
       $group: {
         _id: '$bookingStatus',
         count: { $sum: 1 },
       },
     },
-    
-    // Stage 3: Project structure
+
     {
       $project: {
         _id: 0,
@@ -69,21 +52,14 @@ const getStatusDistribution = asyncHandler(async (req, res) => {
         count: 1,
       },
     },
-    
-    // Stage 4: Sort by count descending
+
     { $sort: { count: -1 } },
   ]);
 
   return ApiResponse.success(res, 'Booking status distribution statistics retrieved.', stats, 200);
 });
 
-/**
- * @desc    Aggregate top 10 pickup and drop-off locations
- * @route   GET /api/v1/analytics/location-demand
- * @access  Private/Admin
- */
 const getLocationDemand = asyncHandler(async (req, res) => {
-  // Aggregate top pickups
   const topPickups = await Booking.aggregate([
     { $match: { isDeleted: false } },
     { $group: { _id: '$pickupLocation', count: { $sum: 1 } } },
@@ -92,7 +68,6 @@ const getLocationDemand = asyncHandler(async (req, res) => {
     { $limit: 10 },
   ]);
 
-  // Aggregate top drops
   const topDrops = await Booking.aggregate([
     { $match: { isDeleted: false } },
     { $group: { _id: '$dropLocation', count: { $sum: 1 } } },
@@ -109,14 +84,8 @@ const getLocationDemand = asyncHandler(async (req, res) => {
   );
 });
 
-/**
- * @desc    Aggregate average customer and driver ratings by vehicle type
- * @route   GET /api/v1/analytics/ratings-summary
- * @access  Private/Admin
- */
 const getRatingsSummary = asyncHandler(async (req, res) => {
   const stats = await Booking.aggregate([
-    // Stage 1: Match only non-deleted documents where ratings exist
     {
       $match: {
         isDeleted: false,
@@ -124,8 +93,7 @@ const getRatingsSummary = asyncHandler(async (req, res) => {
         customerRating: { $ne: null },
       },
     },
-    
-    // Stage 2: Group by vehicle type and calculate averages
+
     {
       $group: {
         _id: '$vehicleType',
@@ -134,8 +102,7 @@ const getRatingsSummary = asyncHandler(async (req, res) => {
         ratedBookingsCount: { $sum: 1 },
       },
     },
-    
-    // Stage 3: Project and round to 2 decimal places
+
     {
       $project: {
         _id: 0,
@@ -145,8 +112,7 @@ const getRatingsSummary = asyncHandler(async (req, res) => {
         ratedBookingsCount: 1,
       },
     },
-    
-    // Stage 4: Sort alphabetically by vehicle type
+
     { $sort: { vehicleType: 1 } },
   ]);
 

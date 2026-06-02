@@ -2,11 +2,6 @@ const Payment = require('../models/Payment');
 const ApiResponse = require('../utils/apiResponse');
 const asyncHandler = require('../utils/asyncHandler');
 
-/**
- * @desc    Create a new payment record
- * @route   POST /api/v1/payments
- * @access  Private
- */
 const createPayment = asyncHandler(async (req, res) => {
   const { paymentId, bookingId, amount, paymentMethod, status } = req.body;
 
@@ -30,11 +25,6 @@ const createPayment = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, 'Payment created successfully.', payment, 201);
 });
 
-/**
- * @desc    Delete a payment record (hard delete)
- * @route   DELETE /api/v1/payments/:paymentId
- * @access  Private
- */
 const deletePayment = asyncHandler(async (req, res) => {
   const { paymentId } = req.params;
 

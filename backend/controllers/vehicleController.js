@@ -2,11 +2,6 @@ const Vehicle = require('../models/Vehicle');
 const ApiResponse = require('../utils/apiResponse');
 const asyncHandler = require('../utils/asyncHandler');
 
-/**
- * @desc    Create a new vehicle record
- * @route   POST /api/v1/vehicles
- * @access  Private
- */
 const createVehicle = asyncHandler(async (req, res) => {
   const { vehicleId, vehicleType, vehicleNumber } = req.body;
 
@@ -28,11 +23,6 @@ const createVehicle = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, 'Vehicle created successfully.', vehicle, 201);
 });
 
-/**
- * @desc    Delete a vehicle record (soft delete)
- * @route   DELETE /api/v1/vehicles/:vehicleId
- * @access  Private
- */
 const deleteVehicle = asyncHandler(async (req, res) => {
   const { vehicleId } = req.params;
 
