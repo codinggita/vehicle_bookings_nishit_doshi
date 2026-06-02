@@ -100,7 +100,6 @@ const BookingSchema = new mongoose.Schema(
   }
 );
 
-// Compound index for optimizing search / filter / pagination
 BookingSchema.index({ date: -1, bookingStatus: 1 });
 
 module.exports = mongoose.model('Booking', BookingSchema);

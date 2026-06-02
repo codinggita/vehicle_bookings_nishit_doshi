@@ -13,10 +13,8 @@ const {
 
 const router = express.Router();
 
-// All middleware routes require authentication
 router.use(protect);
 
-// ── Admin Routes (Admin role only) ────────────────────────────────────────────
 router.route('/admin/bookings')
   .get(authorize('admin'), getAdminBookings)
   .post(authorize('admin'), adminCreateBooking);
@@ -27,7 +25,6 @@ router.route('/admin/bookings/:bookingId')
 
 router.get('/admin/dashboard', authorize('admin'), getAdminDashboard);
 
-// ── Protected Routes (Any authenticated user) ────────────────────────────────
 router.route('/protected/bookings')
   .get(getProtectedBookings)
   .post(createProtectedBooking);

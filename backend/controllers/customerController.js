@@ -2,11 +2,6 @@ const Customer = require('../models/Customer');
 const ApiResponse = require('../utils/apiResponse');
 const asyncHandler = require('../utils/asyncHandler');
 
-/**
- * @desc    Create a new customer record
- * @route   POST /api/v1/customers
- * @access  Private
- */
 const createCustomer = asyncHandler(async (req, res) => {
   const { customerId, name, email, phone } = req.body;
 
@@ -29,11 +24,6 @@ const createCustomer = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, 'Customer created successfully.', customer, 201);
 });
 
-/**
- * @desc    Bulk insert customer records
- * @route   POST /api/v1/customers/bulk-insert
- * @access  Private
- */
 const bulkInsertCustomers = asyncHandler(async (req, res) => {
   const { customers } = req.body;
 
@@ -45,11 +35,6 @@ const bulkInsertCustomers = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, `${result.length} customers inserted successfully.`, result, 201);
 });
 
-/**
- * @desc    Delete a customer record (soft delete)
- * @route   DELETE /api/v1/customers/:customerId
- * @access  Private
- */
 const deleteCustomer = asyncHandler(async (req, res) => {
   const { customerId } = req.params;
 
@@ -64,11 +49,6 @@ const deleteCustomer = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, `Customer ${customerId} deleted successfully.`, null, 200);
 });
 
-/**
- * @desc    Delete all customer records (hard delete)
- * @route   DELETE /api/v1/customers/delete-all
- * @access  Private
- */
 const deleteAllCustomers = asyncHandler(async (req, res) => {
   const result = await Customer.deleteMany({});
   return ApiResponse.success(res, `All customers deleted successfully. Count: ${result.deletedCount}`, null, 200);

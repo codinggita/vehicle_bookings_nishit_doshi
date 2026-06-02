@@ -2,11 +2,6 @@ const Driver = require('../models/Driver');
 const ApiResponse = require('../utils/apiResponse');
 const asyncHandler = require('../utils/asyncHandler');
 
-/**
- * @desc    Create a new driver record
- * @route   POST /api/v1/drivers
- * @access  Private
- */
 const createDriver = asyncHandler(async (req, res) => {
   const { driverId, name, phone, rating } = req.body;
 
@@ -29,11 +24,6 @@ const createDriver = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, 'Driver created successfully.', driver, 201);
 });
 
-/**
- * @desc    Bulk insert driver records
- * @route   POST /api/v1/drivers/bulk-insert
- * @access  Private
- */
 const bulkInsertDrivers = asyncHandler(async (req, res) => {
   const { drivers } = req.body;
 
@@ -45,11 +35,6 @@ const bulkInsertDrivers = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, `${result.length} drivers inserted successfully.`, result, 201);
 });
 
-/**
- * @desc    Delete a driver record (soft delete)
- * @route   DELETE /api/v1/drivers/:driverId
- * @access  Private
- */
 const deleteDriver = asyncHandler(async (req, res) => {
   const { driverId } = req.params;
 
@@ -64,11 +49,6 @@ const deleteDriver = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, `Driver ${driverId} deleted successfully.`, null, 200);
 });
 
-/**
- * @desc    Delete all driver records (hard delete)
- * @route   DELETE /api/v1/drivers/delete-all
- * @access  Private
- */
 const deleteAllDrivers = asyncHandler(async (req, res) => {
   const result = await Driver.deleteMany({});
   return ApiResponse.success(res, `All drivers deleted successfully. Count: ${result.deletedCount}`, null, 200);

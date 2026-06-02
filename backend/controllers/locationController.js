@@ -2,11 +2,6 @@ const Location = require('../models/Location');
 const ApiResponse = require('../utils/apiResponse');
 const asyncHandler = require('../utils/asyncHandler');
 
-/**
- * @desc    Create a new location record
- * @route   POST /api/v1/locations
- * @access  Private
- */
 const createLocation = asyncHandler(async (req, res) => {
   const { locationId, name, type } = req.body;
 

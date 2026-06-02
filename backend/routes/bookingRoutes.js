@@ -11,7 +11,6 @@ const {
 } = require('../controllers/bookingController');
 
 const {
-  // Part 1 — Routes 1 to 10
   getByBookingId,
   getByStatus,
   getByCustomer,
@@ -22,7 +21,6 @@ const {
   getByDate,
   getByTime,
   getByDriverRating,
-  // Part 2 — Routes 11 to 20
   getByCustomerRating,
   getByDistance,
   getByValue,
@@ -33,7 +31,6 @@ const {
   getByVtat,
   getByCtat,
   getByDay,
-  // Part 3 — Routes 21 to 30
   getByMonth,
   getByYear,
   getByHour,
@@ -50,50 +47,45 @@ const { protect } = require('../middlewares/auth');
 
 const router = express.Router();
 
-// Protect all booking routes
 router.use(protect);
 
-// ── Core CRUD ─────────────────────────────────────────────────────────────────
 router.route('/').get(getBookings).post(createBooking);
 router.post('/bulk-insert', bulkInsertBookings);
 router.delete('/delete-all', deleteAllBookings);
 router.route('/:bookingId/status').patch(updateBookingStatus);
 router.route('/:bookingId').get(getBookingById).put(updateBooking).delete(deleteBooking);
 
-// ── Part 1: Filter Routes (1–10) ──────────────────────────────────────────────
-router.get('/id/:bookingId',          getByBookingId);       // 1
-router.get('/status/:status',         getByStatus);          // 2
-router.get('/customer/:customerId',   getByCustomer);        // 3
-router.get('/vehicle/:vehicleType',   getByVehicleType);     // 4
-router.get('/payment/:method',        getByPaymentMethod);   // 5
-router.get('/pickup/:location',       getByPickupLocation);  // 6
-router.get('/drop/:location',         getByDropLocation);    // 7
-router.get('/date/:date',             getByDate);            // 8
-router.get('/time/:time',             getByTime);            // 9
-router.get('/rating/driver/:rating',  getByDriverRating);    // 10
+router.get('/id/:bookingId',          getByBookingId);       
+router.get('/status/:status',         getByStatus);          
+router.get('/customer/:customerId',   getByCustomer);        
+router.get('/vehicle/:vehicleType',   getByVehicleType);     
+router.get('/payment/:method',        getByPaymentMethod);   
+router.get('/pickup/:location',       getByPickupLocation);  
+router.get('/drop/:location',         getByDropLocation);    
+router.get('/date/:date',             getByDate);            
+router.get('/time/:time',             getByTime);            
+router.get('/rating/driver/:rating',  getByDriverRating);    
 
-// ── Part 2: Filter Routes (11–20) ─────────────────────────────────────────────
-router.get('/rating/customer/:rating',    getByCustomerRating);    // 11
-router.get('/distance/:distance',         getByDistance);          // 12
-router.get('/value/:amount',              getByValue);             // 13
-router.get('/incomplete/:status',         getByIncompleteStatus);  // 14
-router.get('/incomplete-reason/:reason',  getByIncompleteReason);  // 15
-router.get('/cancel/customer/:reason',    getByCancelCustomer);    // 16
-router.get('/cancel/driver/:reason',      getByCancelDriver);      // 17
-router.get('/vtat/:minutes',              getByVtat);              // 18
-router.get('/ctat/:minutes',              getByCtat);              // 19
-router.get('/day/:day',                   getByDay);               // 20
+router.get('/rating/customer/:rating',    getByCustomerRating);    
+router.get('/distance/:distance',         getByDistance);          
+router.get('/value/:amount',              getByValue);             
+router.get('/incomplete/:status',         getByIncompleteStatus);  
+router.get('/incomplete-reason/:reason',  getByIncompleteReason);  
+router.get('/cancel/customer/:reason',    getByCancelCustomer);    
+router.get('/cancel/driver/:reason',      getByCancelDriver);      
+router.get('/vtat/:minutes',              getByVtat);              
+router.get('/ctat/:minutes',              getByCtat);              
+router.get('/day/:day',                   getByDay);               
 
-// ── Part 3: Filter Routes (21–30) ─────────────────────────────────────────────
-router.get('/month/:month',                      getByMonth);          // 21
-router.get('/year/:year',                        getByYear);           // 22
-router.get('/hour/:hour',                        getByHour);           // 23
-router.get('/minute/:minute',                    getByMinute);         // 24
-router.get('/source/:pickup',                    getBySource);         // 25
-router.get('/destination/:drop',                 getByDestination);    // 26
-router.get('/vehicle-image/:imageName',          getByVehicleImage);   // 27
-router.get('/fare/:value',                       getByFare);           // 28
-router.get('/customer/:customerId/history',      getCustomerHistory);  // 29
-router.get('/customer/:customerId/latest',       getCustomerLatest);   // 30
+router.get('/month/:month',                      getByMonth);          
+router.get('/year/:year',                        getByYear);           
+router.get('/hour/:hour',                        getByHour);           
+router.get('/minute/:minute',                    getByMinute);         
+router.get('/source/:pickup',                    getBySource);         
+router.get('/destination/:drop',                 getByDestination);    
+router.get('/vehicle-image/:imageName',          getByVehicleImage);   
+router.get('/fare/:value',                       getByFare);           
+router.get('/customer/:customerId/history',      getCustomerHistory);  
+router.get('/customer/:customerId/latest',       getCustomerLatest);   
 
 module.exports = router;
