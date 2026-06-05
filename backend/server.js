@@ -24,6 +24,7 @@ const vehicleRoutes    = require('./routes/vehicleRoutes');
 const locationRoutes   = require('./routes/locationRoutes');
 const logRoutes        = require('./routes/logRoutes');
 const middlewareRoutes  = require('./routes/middlewareRoutes');
+const statsRoutes       = require('./routes/statsRoutes');
 
 connectDB();
 
@@ -56,6 +57,7 @@ app.use('/api/v1/locations', locationRoutes);
 app.use('/api/v1/logs',      logRoutes);
 app.use('/api/v1',           middlewareRoutes);
 app.use('/api/v1',           paginationRoutes);
+app.use('/api/v1/stats',     statsRoutes);
 
 app.use((req, res, next) => {
   const error = new Error(`Cannot find requested route ${req.method} ${req.originalUrl}`);
