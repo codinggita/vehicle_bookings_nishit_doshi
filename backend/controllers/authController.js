@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const User = require('../models/User');
 const ApiResponse = require('../utils/apiResponse');
 const { generateToken } = require('../utils/auth');
@@ -92,8 +93,112 @@ const getProfile = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, 'User profile retrieved successfully.', profile, 200);
 });
 
+const logout = asyncHandler(async (req, res) => {
+  return ApiResponse.success(res, 'Logged out successfully. Please destroy the authentication token on the client side.', null, 200);
+});
+
+const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return ApiResponse.error(res, 'Please provide an email address.', null, 400);
+  }
+
+  const user = await User.findOne({ email, isDeleted: false });
+  if (!user) {
+    return ApiResponse.error(res, 'No account found with this email address.', null, 404);
+  }
+
+  const resetToken = crypto.randomBytes(20).toString('hex');
+
+  user.resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+
+  await user.save();
+
+  return ApiResponse.success(
+    res,
+    'Password reset token generated successfully.',
+    { resetToken },
+    200
+  );
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
+  const { token, password } = req.body;
+
+  if (!token || !password) {
+    return ApiResponse.error(res, 'Please provide both the reset token and a new password.', null, 400);
+  }
+
+  if (password.length < 6) {
+    return ApiResponse.error(res, 'Password must be at least 6 characters long.', null, 400);
+  }
+
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(token)
+    .digest('hex');
+
+  const user = await User.findOne({
+    resetPasswordToken: hashedToken,
+    resetPasswordExpire: { $gt: Date.now() },
+    isDeleted: false,
+  });
+
+  if (!user) {
+    return ApiResponse.error(res, 'Invalid or expired password reset token.', null, 400);
+  }
+
+  user.password = password;
+  user.resetPasswordToken = null;
+  user.resetPasswordExpire = null;
+  await user.save();
+
+  return ApiResponse.success(res, 'Password updated successfully.', null, 200);
+});
+
+const refreshToken = asyncHandler(async (req, res) => {
+  if (!req.user) {
+    return ApiResponse.error(res, 'User context not found.', null, 401);
+  }
+
+  const token = generateToken(req.user._id);
+
+  return ApiResponse.success(
+    res,
+    'Authentication token refreshed successfully.',
+    { token },
+    200
+  );
+});
+
+const deleteAccount = asyncHandler(async (req, res) => {
+  if (!req.user) {
+    return ApiResponse.error(res, 'User context not found.', null, 401);
+  }
+
+  const user = await User.findById(req.user._id);
+  if (!user || user.isDeleted) {
+    return ApiResponse.error(res, 'User account not found or already deleted.', null, 404);
+  }
+
+  user.isDeleted = true;
+  await user.save();
+
+  return ApiResponse.success(res, 'User account deleted successfully.', null, 200);
+});
+
 module.exports = {
   register,
   login,
   getProfile,
+  logout,
+  forgotPassword,
+  resetPassword,
+  refreshToken,
+  deleteAccount,
 };
