@@ -44,16 +44,55 @@ const {
 } = require('../controllers/filterController');
 
 const { protect } = require('../middlewares/auth');
+const {
+  bookingsLimiter,
+  createBookingLimiter,
+  deleteBookingLimiter
+} = require('../middlewares/rateLimiter');
+const {
+  getHighestFareBookings,
+  getLowestFareBookings,
+  getRecentBookings,
+  getLatestBookings,
+  getRandomBookings,
+  getTrendingBookings,
+  getSuccessBookings,
+  getCancelledBookings,
+  getIncompleteBookings,
+  getDriverNotFoundBookings,
+  getAISummary
+} = require('../controllers/advanceController');
+
+const optionsHandler = require('../utils/optionsHandler');
 
 const router = express.Router();
 
+router.options('/', optionsHandler(['GET', 'POST', 'HEAD', 'OPTIONS']));
+router.options('/:bookingId', optionsHandler(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']));
+
 router.use(protect);
 
-router.route('/').get(getBookings).post(createBooking);
+router.route('/')
+  .get(bookingsLimiter, getBookings)
+  .post(createBookingLimiter, createBooking);
 router.post('/bulk-insert', bulkInsertBookings);
 router.delete('/delete-all', deleteAllBookings);
+
+// Advanced booking subroutes
+router.get('/top/highest-fare', getHighestFareBookings);
+router.get('/top/lowest-fare', getLowestFareBookings);
+router.get('/recent', getRecentBookings);
+router.get('/latest', getLatestBookings);
+router.get('/random', getRandomBookings);
+router.get('/trending', getTrendingBookings);
+router.get('/success', getSuccessBookings);
+router.get('/cancelled', getCancelledBookings);
+router.get('/incomplete', getIncompleteBookings);
+router.get('/driver-not-found', getDriverNotFoundBookings);
+router.get('/summary/ai', getAISummary);
+
 router.route('/:bookingId/status').patch(updateBookingStatus);
-router.route('/:bookingId').get(getBookingById).put(updateBooking).delete(deleteBooking);
+router.route('/:bookingId').get(getBookingById).put(updateBooking).patch(updateBooking).delete(deleteBookingLimiter, deleteBooking);
 
 router.get('/id/:bookingId',          getByBookingId);       
 router.get('/status/:status',         getByStatus);          
