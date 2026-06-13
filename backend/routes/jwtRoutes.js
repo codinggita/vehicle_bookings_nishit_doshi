@@ -11,8 +11,11 @@ const {
   logout,
 } = require('../controllers/jwtController');
 
+const optionsHandler = require('../utils/optionsHandler');
+
 const router = express.Router();
 
+router.options('/profile', optionsHandler(['GET', 'OPTIONS']));
 router.get('/profile', protect, getProfile);
 router.get('/dashboard', protect, getDashboard);
 router.post('/generate-token', generateToken);

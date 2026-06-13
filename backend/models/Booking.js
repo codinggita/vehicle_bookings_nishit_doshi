@@ -8,6 +8,7 @@ const BookingSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       index: true,
+      match: [/^CNR/i, 'Booking ID must start with "CNR"'],
     },
     date: {
       type: Date,
@@ -27,6 +28,7 @@ const BookingSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Customer ID is required'],
       index: true,
+      match: [/^(CID|UNKNOWN)/i, 'Customer ID must start with "CID" or be "UNKNOWN"'],
     },
     vehicleType: {
       type: String,
@@ -68,6 +70,7 @@ const BookingSchema = new mongoose.Schema(
     bookingValue: {
       type: Number,
       required: [true, 'Booking Value is required'],
+      min: [0, 'Booking Value cannot be negative'],
     },
     paymentMethod: {
       type: String,
@@ -76,14 +79,19 @@ const BookingSchema = new mongoose.Schema(
     rideDistance: {
       type: Number,
       required: [true, 'Ride Distance is required'],
+      min: [0, 'Ride Distance cannot be negative'],
     },
     driverRating: {
       type: Number,
       default: null,
+      min: [0, 'Driver rating must be between 0 and 5'],
+      max: [5, 'Driver rating must be between 0 and 5'],
     },
     customerRating: {
       type: Number,
       default: null,
+      min: [0, 'Customer rating must be between 0 and 5'],
+      max: [5, 'Customer rating must be between 0 and 5'],
     },
     vehicleImage: {
       type: String,

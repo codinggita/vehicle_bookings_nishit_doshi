@@ -9,3 +9,5 @@ router.use(protect);
 router.delete('/:id', deleteLog);
 
 module.exports = router;
+
+

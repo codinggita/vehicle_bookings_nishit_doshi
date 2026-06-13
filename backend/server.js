@@ -36,6 +36,7 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
+  preflightContinue: true,
 };
 app.use(cors(corsOptions));
 
@@ -44,7 +45,19 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(requestLogger);
 
-app.use('/api/v1/health',    healthRoutes);
+const advanceController = require('./controllers/advanceController');
+const optionsHandler = require('./utils/optionsHandler');
+
+app.options('/health', optionsHandler(['GET', 'HEAD', 'OPTIONS']));
+app.options('/api/v1/health', optionsHandler(['GET', 'HEAD', 'OPTIONS']));
+
+app.get('/health', advanceController.getHealth);
+app.get('/api/v1/health', advanceController.getHealth);
+app.get('/version', advanceController.getVersion);
+app.get('/api/v1/version', advanceController.getVersion);
+app.get('/compare', require('./middlewares/auth').protect, advanceController.compareBookings);
+app.get('/api/v1/compare', require('./middlewares/auth').protect, advanceController.compareBookings);
+
 app.use('/api/v1/auth',      authRoutes);
 app.use('/api/v1/bookings',  bookingRoutes);
 app.use('/api/v1/analytics', analyticsRoutes);
@@ -56,10 +69,19 @@ app.use('/api/v1/ratings',   ratingRoutes);
 app.use('/api/v1/vehicles',  vehicleRoutes);
 app.use('/api/v1/locations', locationRoutes);
 app.use('/api/v1/logs',      logRoutes);
-app.use('/api/v1',           middlewareRoutes);
-app.use('/api/v1',           paginationRoutes);
 app.use('/api/v1/stats',     statsRoutes);
 app.use('/api/v1/jwt',       jwtRoutes);
+app.use('/api/v1',           middlewareRoutes);
+app.use('/api/v1',           paginationRoutes);
+app.post('/api/v1/import/json', require('./middlewares/auth').protect, require('./middlewares/rateLimiter').importLimiter, require('./controllers/bookingController').bulkInsertBookings);
+
+// Fallback OPTIONS handler for routes without explicit options definition
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
+  next();
+});
 
 app.use((req, res, next) => {
   const error = new Error(`Cannot find requested route ${req.method} ${req.originalUrl}`);

@@ -11,10 +11,16 @@ const {
   searchByIncompleteReason,
   searchByRating,
 } = require('../controllers/searchController');
+const { searchLimiter } = require('../middlewares/rateLimiter');
+
+const optionsHandler = require('../utils/optionsHandler');
 
 const router = express.Router();
 
+router.options('/', optionsHandler(['GET', 'OPTIONS']));
+
 router.use(protect);
+router.use(searchLimiter);
 
 router.get('/', searchGeneral);
 router.get('/bookings', searchByBookingId);

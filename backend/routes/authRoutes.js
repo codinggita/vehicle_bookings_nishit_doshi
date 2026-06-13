@@ -10,11 +10,15 @@ const {
   deleteAccount,
 } = require('../controllers/authController');
 const { protect } = require('../middlewares/auth');
+const { loginLimiter, registerLimiter } = require('../middlewares/rateLimiter');
+
+const optionsHandler = require('../utils/optionsHandler');
 
 const router = express.Router();
 
-router.post('/register', register);
-router.post('/login', login);
+router.options('/login', optionsHandler(['POST', 'OPTIONS']));
+router.post('/register', registerLimiter, register);
+router.post('/login', loginLimiter, login);
 router.post('/logout', protect, logout);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
