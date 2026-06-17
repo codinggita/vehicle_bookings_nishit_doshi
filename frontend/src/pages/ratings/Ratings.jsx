@@ -29,12 +29,12 @@ export default function Ratings() {
   ]
 
   const csvFields = [
-    { key: 'bookingId', label: 'Booking ID' },
-    { key: 'customerId', label: 'Customer ID' },
-    { key: 'driverRating', label: 'Driver Rating', accessor: (r) => r.driverRating || 0 },
-    { key: 'customerRating', label: 'Customer Rating', accessor: (r) => r.customerRating || 0 },
-    { key: 'vehicleType', label: 'Vehicle' },
-    { key: 'date', label: 'Date', accessor: (r) => r.date ? new Date(r.date).toLocaleDateString() : '-' },
+    { label: 'Booking ID', accessor: 'bookingId' },
+    { label: 'Customer ID', accessor: 'customerId' },
+    { label: 'Driver Rating', accessor: (r) => r.driverRating || 0 },
+    { label: 'Customer Rating', accessor: (r) => r.customerRating || 0 },
+    { label: 'Vehicle', accessor: 'vehicleType' },
+    { label: 'Date', accessor: (r) => r.date ? new Date(r.date).toLocaleDateString() : '-' },
   ]
 
   const fetchData = useCallback(async (page = 0, limit = 10) => {
