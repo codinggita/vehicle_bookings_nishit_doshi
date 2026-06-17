@@ -9,6 +9,10 @@ import DirectionsCarIcon from '@mui/icons-material/DirectionsCar'
 import PeopleIcon from '@mui/icons-material/People'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
 import StarIcon from '@mui/icons-material/Star'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import CancelIcon from '@mui/icons-material/Cancel'
+import PaymentIcon from '@mui/icons-material/Payment'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import SEO from '../../components/SEO'
 import { getRevenueStats, getRatingsSummary } from '../../services/analyticsService'
 import { getStats } from '../../services/statsService'
@@ -77,34 +81,89 @@ export default function Dashboard() {
           {loading ? <Skeleton variant="rounded" height={80} /> : <StatCard title={isAdmin ? 'Total Users' : 'Vehicle Types'} value={isAdmin ? (stats?.totalUsers ?? revenueData?.length ?? 0) : (revenueData?.length || 0)} icon={<PeopleIcon />} color="#9c27b0" />}
         </Grid>
       </Grid>
-      {isAdmin && stats && (
-        <Grid container spacing={3} sx={{ mt: 1 }}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Paper sx={{ p: 2 }}>
-              <Typography variant="body2" color="text.secondary">Success Rides</Typography>
-              <Typography variant="h5" fontWeight={600}>{stats.successRides?.toLocaleString()}</Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Paper sx={{ p: 2 }}>
-              <Typography variant="body2" color="text.secondary">Cancelled Rides</Typography>
-              <Typography variant="h5" fontWeight={600}>{stats.cancelledRides?.toLocaleString()}</Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Paper sx={{ p: 2 }}>
-              <Typography variant="body2" color="text.secondary">Top Vehicle</Typography>
-              <Typography variant="h5" fontWeight={600}>{stats.topVehicle || 'N/A'}</Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Paper sx={{ p: 2 }}>
-              <Typography variant="body2" color="text.secondary">Top Payment</Typography>
-              <Typography variant="h5" fontWeight={600}>{stats.topPaymentMethod || 'N/A'}</Typography>
-            </Paper>
-          </Grid>
+      <Grid container spacing={3} sx={{ mt: 1 }}>
+        {/* Chart Section */}
+        <Grid item xs={12} md={isAdmin ? 8 : 12}>
+          <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column', height: 380 }} elevation={1}>
+            <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
+              Vehicle Type Analytics Overview
+            </Typography>
+            {loading ? (
+              <Skeleton variant="rectangular" height="100%" sx={{ borderRadius: 2 }} />
+            ) : revenueData && revenueData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={revenueData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis dataKey="vehicleType" tickLine={false} axisLine={false} style={{ fontSize: 12, fontWeight: 500 }} />
+                  <YAxis tickLine={false} axisLine={false} style={{ fontSize: 12, fontWeight: 500 }} />
+                  <Tooltip 
+                    contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }} 
+                    formatter={(value, name) => [name === 'totalRevenue' ? `₹${value.toLocaleString()}` : value, name === 'totalRevenue' ? 'Revenue' : 'Bookings']}
+                  />
+                  <Bar dataKey="totalRevenue" name="totalRevenue" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={25} />
+                  <Bar dataKey="totalBookings" name="totalBookings" fill="#06b6d4" radius={[4, 4, 0, 0]} barSize={25} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                <Typography color="text.secondary">No data available</Typography>
+              </Box>
+            )}
+          </Paper>
         </Grid>
-      )}
+
+        {/* Admin Stats Sidebar Cards */}
+        {isAdmin && stats && (
+          <Grid item xs={12} md={4}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6} md={12}>
+                <Paper sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }} elevation={1}>
+                  <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: 'success.main', color: '#ffffff', display: 'flex' }}>
+                    <CheckCircleIcon />
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">Success Rides</Typography>
+                    <Typography variant="h6" fontWeight={700}>{stats.successRides?.toLocaleString()}</Typography>
+                  </Box>
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={6} md={12}>
+                <Paper sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }} elevation={1}>
+                  <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: 'error.main', color: '#ffffff', display: 'flex' }}>
+                    <CancelIcon />
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">Cancelled Rides</Typography>
+                    <Typography variant="h6" fontWeight={700}>{stats.cancelledRides?.toLocaleString()}</Typography>
+                  </Box>
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={6} md={12}>
+                <Paper sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }} elevation={1}>
+                  <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: 'warning.main', color: '#ffffff', display: 'flex' }}>
+                    <DirectionsCarIcon />
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">Top Vehicle</Typography>
+                    <Typography variant="h6" fontWeight={700}>{stats.topVehicle || 'N/A'}</Typography>
+                  </Box>
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={6} md={12}>
+                <Paper sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }} elevation={1}>
+                  <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: 'secondary.main', color: '#ffffff', display: 'flex' }}>
+                    <PaymentIcon />
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">Top Payment</Typography>
+                    <Typography variant="h6" fontWeight={700}>{stats.topPaymentMethod || 'N/A'}</Typography>
+                  </Box>
+                </Paper>
+              </Grid>
+            </Grid>
+          </Grid>
+        )}
+      </Grid>
     </Box>
   )
 }
