@@ -5,6 +5,8 @@ import Typography from '@mui/material/Typography'
 import Avatar from '@mui/material/Avatar'
 import Chip from '@mui/material/Chip'
 import Alert from '@mui/material/Alert'
+import Grid from '@mui/material/Grid'
+import Divider from '@mui/material/Divider'
 import { Card, Input, Button } from '../../components/ui'
 import { fetchProfile } from '../../store/slices/authSlice'
 import { updateProfile as updateProfileService, changePassword as changePasswordService } from '../../services/authService'
@@ -71,52 +73,96 @@ export default function Profile() {
   return (
     <Box>
       <SEO title="Profile" />
-      <Typography variant="h4" fontWeight={600} gutterBottom>Profile</Typography>
-      <Card sx={{ maxWidth: 500 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
-          <Avatar sx={{ width: 80, height: 80, mb: 2, bgcolor: 'primary.main', fontSize: 32 }}>
-            {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-          </Avatar>
-          <Typography variant="h5" fontWeight={600}>{user?.name}</Typography>
-          <Chip label={user?.role} size="small" color="primary" sx={{ mt: 1 }} />
-        </Box>
-
-        {message.text && <Alert severity={message.type} sx={{ mb: 2 }}>{message.text}</Alert>}
-
-        {editing ? (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Input label="Name" name="name" value={form.name} onChange={handleChange} />
-            <Input label="Email" name="email" type="email" value={form.email} onChange={handleChange} />
-            <Input label="Customer ID" name="customerId" value={form.customerId} onChange={handleChange} />
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <Button variant="contained" onClick={handleSave} loading={loading}>Save</Button>
-              <Button color="inherit" onClick={() => setEditing(false)}>Cancel</Button>
+      <Typography variant="h4" fontWeight={600} gutterBottom sx={{ mb: 3 }}>Profile</Typography>
+      
+      <Grid container spacing={3}>
+        {/* Left Side: Avatar and Info Card */}
+        <Grid item xs={12} md={5}>
+          <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', py: 3 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2, textAlign: 'center' }}>
+              <Avatar sx={{ 
+                width: 90, 
+                height: 90, 
+                mb: 2, 
+                bgcolor: 'primary.main', 
+                fontSize: 36,
+                boxShadow: '0 4px 14px rgba(99,102,241,0.3)',
+                background: (theme) => `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`
+              }}>
+                {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+              </Avatar>
+              <Typography variant="h5" fontWeight={700}>{user?.name}</Typography>
+              <Chip label={user?.role?.toUpperCase()} size="small" color="primary" sx={{ mt: 1.5, px: 1.5, fontWeight: 700, letterSpacing: '0.05em' }} />
             </Box>
-          </Box>
-        ) : (
-          <Box>
-            <Typography variant="body1" sx={{ mb: 1 }}><strong>Email:</strong> {user?.email}</Typography>
-            <Typography variant="body1" sx={{ mb: 1 }}><strong>Customer ID:</strong> {user?.customerId || 'N/A'}</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Joined: {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
-            </Typography>
-            <Button variant="outlined" onClick={startEdit}>Edit Profile</Button>
-          </Box>
-        )}
-      </Card>
 
-      <Card sx={{ maxWidth: 500, mt: 3 }}>
-        <Box sx={{ p: 0 }}>
-          <Typography variant="h6" fontWeight={600} gutterBottom sx={{ px: 2, pt: 2 }}>Change Password</Typography>
-          {pwMessage.text && <Alert severity={pwMessage.type} sx={{ mx: 2, mb: 2 }}>{pwMessage.text}</Alert>}
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, px: 2, pb: 2 }}>
-            <Input label="Current Password" name="currentPassword" type="password" value={pwForm.currentPassword} onChange={handlePwChange} />
-            <Input label="New Password" name="newPassword" type="password" value={pwForm.newPassword} onChange={handlePwChange} />
-            <Input label="Confirm New Password" name="confirmPassword" type="password" value={pwForm.confirmPassword} onChange={handlePwChange} />
-            <Button variant="contained" onClick={handlePwSubmit} loading={pwLoading}>Change Password</Button>
+            <Divider sx={{ my: 2, opacity: 0.6 }} />
+
+            <Box sx={{ px: 2, py: 1 }}>
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>Email Address</Typography>
+                <Typography variant="body1" fontWeight={600}>{user?.email}</Typography>
+              </Box>
+
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>Customer ID</Typography>
+                <Typography variant="body1" fontWeight={600}>{user?.customerId || 'N/A'}</Typography>
+              </Box>
+
+              <Box>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>Member Since</Typography>
+                <Typography variant="body1" fontWeight={600}>
+                  {user?.createdAt ? new Date(user.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}
+                </Typography>
+              </Box>
+            </Box>
+          </Card>
+        </Grid>
+
+        {/* Right Side: Forms */}
+        <Grid item xs={12} md={7}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            {/* Edit Info Card */}
+            <Card>
+              <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>Account Information</Typography>
+              {message.text && <Alert severity={message.type} sx={{ mb: 2 }}>{message.text}</Alert>}
+
+              {editing ? (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <Input label="Name" name="name" value={form.name} onChange={handleChange} />
+                  <Input label="Email" name="email" type="email" value={form.email} onChange={handleChange} />
+                  <Input label="Customer ID" name="customerId" value={form.customerId} onChange={handleChange} />
+                  <Box sx={{ display: 'flex', gap: 1.5, mt: 1 }}>
+                    <Button variant="contained" onClick={handleSave} loading={loading}>Save Changes</Button>
+                    <Button color="inherit" variant="outlined" onClick={() => setEditing(false)}>Cancel</Button>
+                  </Box>
+                </Box>
+              ) : (
+                <Box>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Manage your account details and update your contact information here.
+                  </Typography>
+                  <Button variant="outlined" onClick={startEdit}>Edit Profile Details</Button>
+                </Box>
+              )}
+            </Card>
+
+            {/* Change Password Card */}
+            <Card>
+              <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>Change Password</Typography>
+              {pwMessage.text && <Alert severity={pwMessage.type} sx={{ mb: 2 }}>{pwMessage.text}</Alert>}
+
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Input label="Current Password" name="currentPassword" type="password" value={pwForm.currentPassword} onChange={handlePwChange} />
+                <Input label="New Password" name="newPassword" type="password" value={pwForm.newPassword} onChange={handlePwChange} />
+                <Input label="Confirm New Password" name="confirmPassword" type="password" value={pwForm.confirmPassword} onChange={handlePwChange} />
+                <Box sx={{ mt: 1 }}>
+                  <Button variant="contained" onClick={handlePwSubmit} loading={pwLoading}>Update Password</Button>
+                </Box>
+              </Box>
+            </Card>
           </Box>
-        </Box>
-      </Card>
+        </Grid>
+      </Grid>
     </Box>
   )
 }
