@@ -13,12 +13,19 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+let isRefreshing = false
+
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
+  async (error) => {
+    if (error.response?.status === 401 && !error.config._retry) {
+      error.config._retry = true
       localStorage.removeItem('token')
-      window.location.href = '/login'
+      if (!isRefreshing) {
+        isRefreshing = true
+        window.location.href = '/login'
+      }
+      return Promise.reject(error)
     }
     return Promise.reject(error)
   }

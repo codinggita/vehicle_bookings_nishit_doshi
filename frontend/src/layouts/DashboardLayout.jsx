@@ -100,11 +100,16 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   })
 )
 
-const navItems = [
+const adminNavItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
   { text: 'Users', icon: <PeopleIcon />, path: '/users' },
   { text: 'Bookings', icon: <DirectionsCarIcon />, path: '/bookings' },
   { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
+]
+
+const userNavItems = [
+  { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
+  { text: 'Bookings', icon: <DirectionsCarIcon />, path: '/bookings' },
 ]
 
 const bottomNavItems = [
@@ -120,6 +125,9 @@ export default function DashboardLayout() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
+
+  const isAdmin = user?.role === 'admin'
+  const navItems = isAdmin ? adminNavItems : userNavItems
 
   const handleDrawerToggle = () => setOpen(!open)
 
