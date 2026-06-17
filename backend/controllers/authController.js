@@ -190,6 +190,37 @@ const refreshToken = asyncHandler(async (req, res) => {
   );
 });
 
+const changePassword = asyncHandler(async (req, res) => {
+  if (!req.user) {
+    return ApiResponse.error(res, 'User context not found.', null, 401);
+  }
+
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    return ApiResponse.error(res, 'Please provide both current and new password.', null, 400);
+  }
+
+  if (newPassword.length < 6) {
+    return ApiResponse.error(res, 'New password must be at least 6 characters.', null, 400);
+  }
+
+  const user = await User.findById(req.user._id).select('+password');
+  if (!user || user.isDeleted) {
+    return ApiResponse.error(res, 'User not found.', null, 404);
+  }
+
+  const isMatch = await user.matchPassword(currentPassword);
+  if (!isMatch) {
+    return ApiResponse.error(res, 'Current password is incorrect.', null, 401);
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  return ApiResponse.success(res, 'Password changed successfully.', null, 200);
+});
+
 const deleteAccount = asyncHandler(async (req, res) => {
   if (!req.user) {
     return ApiResponse.error(res, 'User context not found.', null, 401);
@@ -211,6 +242,7 @@ module.exports = {
   login,
   getProfile,
   updateProfile,
+  changePassword,
   logout,
   forgotPassword,
   resetPassword,
