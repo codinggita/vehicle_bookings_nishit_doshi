@@ -5,12 +5,16 @@ const paginate = require('../utils/paginate');
 
 
 const getCustomers = asyncHandler(async (req, res) => {
-  const page  = Math.max(parseInt(req.query.page  || '1',  10), 1);
-  const limit = Math.min(parseInt(req.query.limit || '10', 10), 100);
-  const skip  = (page - 1) * limit;
+  const page    = Math.max(parseInt(req.query.page  || '1',  10), 1);
+  const limit   = Math.min(parseInt(req.query.limit || '10', 10), 100);
+  const skip    = (page - 1) * limit;
+  const { search } = req.query;
+
+  const match = { isDeleted: false };
+  if (search) match.customerId = { $regex: search, $options: 'i' };
 
   const result = await Booking.aggregate([
-    { $match: { isDeleted: false } },
+    { $match: match },
     {
       $group: {
         _id: '$customerId',
@@ -45,9 +49,13 @@ const getVehicles = asyncHandler(async (req, res) => {
   const page  = Math.max(parseInt(req.query.page  || '1', 10), 1);
   const limit = Math.min(parseInt(req.query.limit || '5', 10), 100);
   const skip  = (page - 1) * limit;
+  const { search } = req.query;
+
+  const match = { isDeleted: false };
+  if (search) match.vehicleType = { $regex: search, $options: 'i' };
 
   const result = await Booking.aggregate([
-    { $match: { isDeleted: false } },
+    { $match: match },
     {
       $group: {
         _id: '$vehicleType',
@@ -107,22 +115,30 @@ const getIncompleteRides = asyncHandler(async (req, res) => {
 });
 
 const getRatings = asyncHandler(async (req, res) => {
-  const { page, limit, sortBy } = req.query;
+  const { page, limit, sortBy, search } = req.query;
   const query = {
     driverRating:   { $exists: true, $ne: null },
     customerRating: { $exists: true, $ne: null },
     isDeleted: false,
   };
+  if (search) query.$or = [
+    { bookingId: { $regex: search, $options: 'i' } },
+    { customerId: { $regex: search, $options: 'i' } },
+  ];
   const data = await paginate(Booking, query, { page, limit, sortBy: sortBy || 'driverRating:desc' });
   return ApiResponse.success(res, 'Rated bookings fetched successfully.', data, 200);
 });
 
 const getPayments = asyncHandler(async (req, res) => {
-  const { page, limit, sortBy } = req.query;
+  const { page, limit, sortBy, search } = req.query;
   const query = {
     paymentMethod: { $exists: true, $ne: null },
     isDeleted: false,
   };
+  if (search) query.$or = [
+    { bookingId: { $regex: search, $options: 'i' } },
+    { paymentMethod: { $regex: search, $options: 'i' } },
+  ];
   const data = await paginate(Booking, query, { page, limit, sortBy });
   return ApiResponse.success(res, 'Payment records fetched successfully.', data, 200);
 });
