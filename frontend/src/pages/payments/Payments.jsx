@@ -28,11 +28,11 @@ export default function Payments() {
   ]
 
   const csvFields = [
-    { key: 'bookingId', label: 'Booking ID' },
-    { key: 'paymentMethod', label: 'Method' },
-    { key: 'bookingValue', label: 'Amount', accessor: (r) => r.bookingValue || 0 },
-    { key: 'date', label: 'Date', accessor: (r) => r.date ? new Date(r.date).toLocaleDateString() : '-' },
-    { key: 'bookingStatus', label: 'Status' },
+    { label: 'Booking ID', accessor: 'bookingId' },
+    { label: 'Method', accessor: 'paymentMethod' },
+    { label: 'Amount', accessor: (r) => r.bookingValue || 0 },
+    { label: 'Date', accessor: (r) => r.date ? new Date(r.date).toLocaleDateString() : '-' },
+    { label: 'Status', accessor: 'bookingStatus' },
   ]
 
   const fetchData = useCallback(async (page = 0, limit = 10) => {

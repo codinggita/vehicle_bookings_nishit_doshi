@@ -77,6 +77,11 @@ const AppBar = styled(MuiAppBar, { shouldForwardProp: (prop) => prop !== 'open' 
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
+    backgroundColor: theme.palette.mode === 'dark' ? 'rgba(15, 23, 42, 0.7)' : 'rgba(255, 255, 255, 0.7)',
+    backdropFilter: 'blur(12px)',
+    color: theme.palette.text.primary,
+    boxShadow: 'none',
+    borderBottom: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.8)'}`,
     ...(open && {
       marginLeft: drawerWidth,
       width: `calc(100% - ${drawerWidth}px)`,
@@ -96,11 +101,19 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     boxSizing: 'border-box',
     ...(open && {
       ...openedMixin(theme),
-      '& .MuiDrawer-paper': openedMixin(theme),
+      '& .MuiDrawer-paper': {
+        ...openedMixin(theme),
+        backgroundColor: theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff',
+        borderRight: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.8)'}`,
+      },
     }),
     ...(!open && {
       ...closedMixin(theme),
-      '& .MuiDrawer-paper': closedMixin(theme),
+      '& .MuiDrawer-paper': {
+        ...closedMixin(theme),
+        backgroundColor: theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff',
+        borderRight: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.8)'}`,
+      },
     }),
   })
 )
@@ -192,10 +205,34 @@ export default function DashboardLayout() {
               key={item.text}
               selected={location.pathname === item.path}
               onClick={() => navigate(item.path)}
-              sx={{ mx: 0.5, borderRadius: 1, mb: 0.5 }}
+              sx={{
+                mx: 1,
+                borderRadius: 2,
+                mb: 0.5,
+                transition: 'all 0.2s ease',
+                '&.Mui-selected': {
+                  background: (theme) => `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+                  color: '#ffffff',
+                  boxShadow: '0 4px 12px rgba(99, 102, 241, 0.25)',
+                  '& .MuiListItemIcon-root': {
+                    color: '#ffffff',
+                  },
+                  '&:hover': {
+                    background: (theme) => `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
+                  }
+                },
+                '&:hover:not(.Mui-selected)': {
+                  backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.04)' : 'rgba(99, 102, 241, 0.04)',
+                  '& .MuiListItemIcon-root': {
+                    color: 'primary.main',
+                  },
+                },
+              }}
             >
-              <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
+              <ListItemIcon sx={{ minWidth: 40, color: location.pathname === item.path ? '#ffffff' : 'text.secondary', transition: 'color 0.2s' }}>
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText primary={item.text} slotProps={{ primary: { fontWeight: location.pathname === item.path ? 600 : 500 } }} />
             </ListItemButton>
           ))}
         </List>
@@ -206,10 +243,34 @@ export default function DashboardLayout() {
               key={item.text}
               selected={location.pathname === item.path}
               onClick={() => navigate(item.path)}
-              sx={{ mx: 0.5, borderRadius: 1, mb: 0.5 }}
+              sx={{
+                mx: 1,
+                borderRadius: 2,
+                mb: 0.5,
+                transition: 'all 0.2s ease',
+                '&.Mui-selected': {
+                  background: (theme) => `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+                  color: '#ffffff',
+                  boxShadow: '0 4px 12px rgba(99, 102, 241, 0.25)',
+                  '& .MuiListItemIcon-root': {
+                    color: '#ffffff',
+                  },
+                  '&:hover': {
+                    background: (theme) => `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
+                  }
+                },
+                '&:hover:not(.Mui-selected)': {
+                  backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.04)' : 'rgba(99, 102, 241, 0.04)',
+                  '& .MuiListItemIcon-root': {
+                    color: 'primary.main',
+                  },
+                },
+              }}
             >
-              <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
+              <ListItemIcon sx={{ minWidth: 40, color: location.pathname === item.path ? '#ffffff' : 'text.secondary', transition: 'color 0.2s' }}>
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText primary={item.text} slotProps={{ primary: { fontWeight: location.pathname === item.path ? 600 : 500 } }} />
             </ListItemButton>
           ))}
         </List>

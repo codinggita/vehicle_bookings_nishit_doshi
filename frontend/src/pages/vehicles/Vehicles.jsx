@@ -19,7 +19,7 @@ export default function Vehicles() {
   const [error, setError] = useState(null)
 
   const columns = [
-    { key: 'vehicleType', label: 'Vehicle Type' },
+    { key: '_id', label: 'Vehicle Type' },
     { key: 'totalBookings', label: 'Bookings' },
     { key: 'totalRevenue', label: 'Revenue', render: (r) => `₹${(r.totalRevenue || 0).toLocaleString()}` },
     { key: 'totalDistance', label: 'Distance (km)', render: (r) => (r.totalDistance || 0).toLocaleString() },
@@ -27,11 +27,11 @@ export default function Vehicles() {
   ]
 
   const csvFields = [
-    { key: 'vehicleType', label: 'Vehicle Type' },
-    { key: 'totalBookings', label: 'Bookings' },
-    { key: 'totalRevenue', label: 'Revenue', accessor: (r) => r.totalRevenue || 0 },
-    { key: 'totalDistance', label: 'Distance (km)', accessor: (r) => (r.totalDistance || 0).toLocaleString() },
-    { key: 'avgDriverRating', label: 'Avg Rating', accessor: (r) => (r.avgDriverRating || 0).toFixed(1) },
+    { label: 'Vehicle Type', accessor: '_id' },
+    { label: 'Bookings', accessor: 'totalBookings' },
+    { label: 'Revenue', accessor: (r) => r.totalRevenue || 0 },
+    { label: 'Distance (km)', accessor: (r) => r.totalDistance || 0 },
+    { label: 'Avg Rating', accessor: (r) => (r.avgDriverRating || 0).toFixed(1) },
   ]
 
   const fetchData = useCallback(async (page = 0, limit = 10) => {
