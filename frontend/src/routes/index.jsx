@@ -12,6 +12,11 @@ const Profile = lazy(() => import('../pages/profile/Profile'))
 const Settings = lazy(() => import('../pages/settings/Settings'))
 const Analytics = lazy(() => import('../pages/analytics/Analytics'))
 const Bookings = lazy(() => import('../pages/bookings/Bookings'))
+const Search = lazy(() => import('../pages/search/Search'))
+const Customers = lazy(() => import('../pages/customers/Customers'))
+const Vehicles = lazy(() => import('../pages/vehicles/Vehicles'))
+const Payments = lazy(() => import('../pages/payments/Payments'))
+const Ratings = lazy(() => import('../pages/ratings/Ratings'))
 const Unauthorized = lazy(() => import('../pages/Unauthorized'))
 
 const LazyLoad = ({ children }) => <Suspense fallback={<Loader />}>{children}</Suspense>
@@ -26,6 +31,11 @@ export default function AppRoutes() {
         <Route index element={<LazyLoad><Dashboard /></LazyLoad>} />
         <Route path="users" element={<ProtectedRoute roles={['admin']}><LazyLoad><Users /></LazyLoad></ProtectedRoute>} />
         <Route path="bookings" element={<LazyLoad><Bookings /></LazyLoad>} />
+        <Route path="search" element={<LazyLoad><Search /></LazyLoad>} />
+        <Route path="customers" element={<ProtectedRoute roles={['admin']}><LazyLoad><Customers /></LazyLoad></ProtectedRoute>} />
+        <Route path="vehicles" element={<ProtectedRoute roles={['admin']}><LazyLoad><Vehicles /></LazyLoad></ProtectedRoute>} />
+        <Route path="payments" element={<ProtectedRoute roles={['admin']}><LazyLoad><Payments /></LazyLoad></ProtectedRoute>} />
+        <Route path="ratings" element={<ProtectedRoute roles={['admin']}><LazyLoad><Ratings /></LazyLoad></ProtectedRoute>} />
         <Route path="analytics" element={<ProtectedRoute roles={['admin']}><LazyLoad><Analytics /></LazyLoad></ProtectedRoute>} />
         <Route path="profile" element={<LazyLoad><Profile /></LazyLoad>} />
         <Route path="settings" element={<LazyLoad><Settings /></LazyLoad>} />

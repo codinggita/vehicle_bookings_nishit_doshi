@@ -9,6 +9,7 @@ import Collapse from '@mui/material/Collapse'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import { Table, Button, ErrorState, Loader } from '../../components/ui'
 import { getBookings } from '../../services/bookingService'
+import useFilterPersistence from '../../hooks/useFilterPersistence'
 
 const statusColors = {
   Success: 'success',
@@ -25,7 +26,7 @@ export default function Bookings() {
   const [showFilters, setShowFilters] = useState(false)
 
   const [search, setSearch] = useState('')
-  const [filters, setFilters] = useState({
+  const [filters, setFilter, resetStoredFilters] = useFilterPersistence('bookings_filters', {
     status: '', vehicleType: '', paymentMethod: '',
     minVal: '', maxVal: '', minDistance: '', maxDistance: '',
   })
@@ -75,12 +76,12 @@ export default function Bookings() {
     { label: 'Max Distance', name: 'maxDistance', type: 'number' },
   ]
 
-  const handleFilterChange = (e) => setFilters({ ...filters, [e.target.name]: e.target.value })
+  const handleFilterChange = (e) => setFilter(e.target.name, e.target.value)
 
   const handleSearch = (e) => { setSearch(e.target.value); fetchBookings(0, pagination.limit) }
 
   const clearFilters = () => {
-    setFilters({ status: '', vehicleType: '', paymentMethod: '', minVal: '', maxVal: '', minDistance: '', maxDistance: '' })
+    resetStoredFilters()
     setSearch('')
     fetchBookings(0, pagination.limit)
   }
