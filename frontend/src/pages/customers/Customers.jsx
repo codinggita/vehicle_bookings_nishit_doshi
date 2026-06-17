@@ -10,7 +10,7 @@ import useFilterPersistence from '../../hooks/useFilterPersistence'
 import SEO from '../../components/SEO'
 
 export default function Customers() {
-  const [filters, setFilter, resetFilters] = useFilterPersistence('customers_filters', { search: '' })
+  const [filters, setFilter] = useFilterPersistence('customers_filters', { search: '' })
   const [rows, setRows] = useState([])
   const [pagination, setPagination] = useState({ page: 0, limit: 10, total: 0 })
   const [loading, setLoading] = useState(true)
@@ -37,7 +37,7 @@ export default function Customers() {
     } finally { setLoading(false) }
   }, [filters])
 
-  useEffect(() => { fetchData() }, [fetchData])
+  useEffect(() => { fetchData() }, [fetchData]) // eslint-disable-line react-hooks/set-state-in-effect
 
   return (
     <Box>

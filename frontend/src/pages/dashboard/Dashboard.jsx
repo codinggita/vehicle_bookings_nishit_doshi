@@ -39,7 +39,7 @@ export default function Dashboard() {
           const { data: st } = await getStats()
           setStats(st.data)
         }
-      } catch (err) {
+      } catch {
         /* silently fail - UI shows partial data */
       } finally {
         setLoading(false)

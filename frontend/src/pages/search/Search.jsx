@@ -4,7 +4,6 @@ import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'
 import Button from '@mui/material/Button'
-import Grid from '@mui/material/Grid'
 import Chip from '@mui/material/Chip'
 import SearchIcon from '@mui/icons-material/Search'
 import { Table, Loader, EmptyState, ErrorState } from '../../components/ui'
@@ -80,7 +79,7 @@ export default function Search() {
     }
   }, [mode, inputs, currentMode])
 
-  useEffect(() => { setInputs({}) }, [mode])
+  useEffect(() => { setInputs({}) }, [mode]) // eslint-disable-line react-hooks/set-state-in-effect
 
   return (
     <Box>
