@@ -5,11 +5,23 @@ import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
 import SearchIcon from '@mui/icons-material/Search'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar'
+import MotorcycleIcon from '@mui/icons-material/Motorcycle'
+import LocalTaxiIcon from '@mui/icons-material/LocalTaxi'
+import AirportShuttleIcon from '@mui/icons-material/AirportShuttle'
 import { Table, Loader, EmptyState, ErrorState, Button } from '../../components/ui'
 import { getVehicles } from '../../services/vehicleService'
 import useFilterPersistence from '../../hooks/useFilterPersistence'
 import SEO from '../../components/SEO'
 import { downloadCSV } from '../../utils/csv'
+
+const vehicleIcons = {
+  Mini: <LocalTaxiIcon color="primary" />,
+  'Prime Sedan': <DirectionsCarIcon color="primary" />,
+  SUV: <AirportShuttleIcon color="primary" />,
+  Auto: <LocalTaxiIcon color="secondary" />,
+  Bike: <MotorcycleIcon color="warning" />,
+}
 
 export default function Vehicles() {
   const [filters, setFilter] = useFilterPersistence('vehicles_filters', { search: '' })
@@ -19,7 +31,18 @@ export default function Vehicles() {
   const [error, setError] = useState(null)
 
   const columns = [
-    { key: '_id', label: 'Vehicle Type' },
+    { 
+      key: '_id', 
+      label: 'Vehicle Type',
+      render: (r) => (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box sx={{ p: 1, borderRadius: 2, bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)', display: 'flex' }}>
+            {vehicleIcons[r._id] || <DirectionsCarIcon />}
+          </Box>
+          <Typography fontWeight={600} variant="body2">{r._id}</Typography>
+        </Box>
+      )
+    },
     { key: 'totalBookings', label: 'Bookings' },
     { key: 'totalRevenue', label: 'Revenue', render: (r) => `₹${(r.totalRevenue || 0).toLocaleString()}` },
     { key: 'totalDistance', label: 'Distance (km)', render: (r) => (r.totalDistance || 0).toLocaleString() },
