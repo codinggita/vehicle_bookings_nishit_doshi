@@ -5,6 +5,7 @@ import TextField from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
+import Paper from '@mui/material/Paper'
 import SearchIcon from '@mui/icons-material/Search'
 import { Table, Loader, EmptyState, ErrorState } from '../../components/ui'
 import { searchAll, searchByBookingId, searchByCustomerId, searchByPayment, searchByVehicle, searchByLocation, searchByCancelReason, searchByIncomplete, searchByRating } from '../../services/searchService'
@@ -84,17 +85,40 @@ export default function Search() {
   return (
     <Box>
       <SEO title="Search Bookings" />
-      <Typography variant="h4" fontWeight={600} gutterBottom>Search</Typography>
-      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center', mb: 3 }}>
-        <TextField select label="Search Mode" value={mode} onChange={(e) => setMode(e.target.value)} size="small" sx={{ minWidth: 200 }}>
-          {modes.map((m) => <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>)}
-        </TextField>
-        {currentMode.params.map((p) => (
-          <TextField key={p} label={p.charAt(0).toUpperCase() + p.slice(1)} size="small" value={inputs[p] || ''} onChange={(e) => handleInputChange(p, e.target.value)} sx={{ minWidth: 160 }} />
-        ))}
-        <Button variant="contained" startIcon={<SearchIcon />} onClick={() => handleSearch(0)}>Search</Button>
-      </Box>
-      {loading ? <Loader /> : error ? <ErrorState message={error} onRetry={() => handleSearch(0)} /> : !searched ? <EmptyState message="Enter search criteria and click Search" /> : rows.length === 0 ? <EmptyState message="No results found" /> : (
+      <Typography variant="h4" fontWeight={600} gutterBottom sx={{ mb: 1 }}>Search Bookings</Typography>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+        Find specific rides, customer statistics, or payment records by picking a search mode.
+      </Typography>
+
+      <Paper sx={{ p: 3, mb: 3 }} elevation={1}>
+        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+          <TextField select label="Search Mode" value={mode} onChange={(e) => setMode(e.target.value)} size="small" sx={{ minWidth: 220 }}>
+            {modes.map((m) => <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>)}
+          </TextField>
+          
+          {currentMode.params.map((p) => (
+            <TextField 
+              key={p} 
+              label={p.charAt(0).toUpperCase() + p.slice(1)} 
+              size="small" 
+              value={inputs[p] || ''} 
+              onChange={(e) => handleInputChange(p, e.target.value)} 
+              sx={{ minWidth: 180 }} 
+              onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(0) }}
+            />
+          ))}
+          
+          <Button variant="contained" startIcon={<SearchIcon />} onClick={() => handleSearch(0)} sx={{ height: 40, px: 3 }}>
+            Search
+          </Button>
+        </Box>
+      </Paper>
+
+      {loading ? <Loader /> : error ? <ErrorState message={error} onRetry={() => handleSearch(0)} /> : !searched ? (
+        <EmptyState message="Enter your parameters above and click Search to query the database." />
+      ) : rows.length === 0 ? (
+        <EmptyState message="No results matched your search criteria." />
+      ) : (
         <Table
           columns={columns}
           rows={rows}
