@@ -19,7 +19,7 @@ export default function Customers() {
   const [error, setError] = useState(null)
 
   const columns = [
-    { key: 'customerId', label: 'Customer ID' },
+    { key: '_id', label: 'Customer ID' },
     { key: 'totalBookings', label: 'Bookings' },
     { key: 'totalSpent', label: 'Total Spent', render: (r) => `₹${(r.totalSpent || 0).toLocaleString()}` },
     { key: 'avgDriverRating', label: 'Avg Rating', render: (r) => (r.avgDriverRating || 0).toFixed(1) },
@@ -40,11 +40,11 @@ export default function Customers() {
   }, [filters])
 
   const csvFields = [
-    { key: 'customerId', label: 'Customer ID' },
-    { key: 'totalBookings', label: 'Bookings' },
-    { key: 'totalSpent', label: 'Total Spent', accessor: (r) => r.totalSpent || 0 },
-    { key: 'avgDriverRating', label: 'Avg Rating', accessor: (r) => (r.avgDriverRating || 0).toFixed(1) },
-    { key: 'lastBookingDate', label: 'Last Booking', accessor: (r) => r.lastBookingDate ? new Date(r.lastBookingDate).toLocaleDateString() : '-' },
+    { label: 'Customer ID', accessor: '_id' },
+    { label: 'Bookings', accessor: 'totalBookings' },
+    { label: 'Total Spent', accessor: (r) => r.totalSpent || 0 },
+    { label: 'Avg Rating', accessor: (r) => (r.avgDriverRating || 0).toFixed(1) },
+    { label: 'Last Booking', accessor: (r) => r.lastBookingDate ? new Date(r.lastBookingDate).toLocaleDateString() : '-' },
   ]
 
   useEffect(() => { fetchData() }, [fetchData]) // eslint-disable-line react-hooks/set-state-in-effect

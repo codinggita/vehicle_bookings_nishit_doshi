@@ -23,7 +23,9 @@ export default function App() {
     palette: {
       ...baseTheme.palette,
       mode: darkMode ? 'dark' : 'light',
-      ...(darkMode && { background: { default: '#121212', paper: '#1e1e1e' } }),
+      background: darkMode 
+        ? { default: '#0f172a', paper: '#1e293b' } 
+        : { default: '#f8fafc', paper: '#ffffff' },
     },
   })
 
