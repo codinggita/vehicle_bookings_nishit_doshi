@@ -7,8 +7,11 @@ import MenuItem from '@mui/material/MenuItem'
 import IconButton from '@mui/material/IconButton'
 import Collapse from '@mui/material/Collapse'
 import FilterListIcon from '@mui/icons-material/FilterList'
+import AddIcon from '@mui/icons-material/Add'
+import { useSnackbar } from 'notistack'
 import { Table, Button, ErrorState, Loader } from '../../components/ui'
-import { getBookings } from '../../services/bookingService'
+import { getBookings, createBooking } from '../../services/bookingService'
+import BookingModal from '../../components/BookingModal'
 import useFilterPersistence from '../../hooks/useFilterPersistence'
 import SEO from '../../components/SEO'
 
@@ -25,6 +28,9 @@ export default function Bookings() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [showFilters, setShowFilters] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const { enqueueSnackbar } = useSnackbar()
 
   const [search, setSearch] = useState('')
   const [filters, setFilter, resetStoredFilters] = useFilterPersistence('bookings_filters', {
@@ -54,6 +60,20 @@ export default function Bookings() {
   }, [buildParams])
 
   useEffect(() => { fetchBookings() }, [fetchBookings]) // eslint-disable-line react-hooks/set-state-in-effect
+
+  const handleCreate = async (values) => {
+    setSubmitting(true)
+    try {
+      await createBooking(values)
+      enqueueSnackbar('Booking created successfully', { variant: 'success' })
+      setModalOpen(false)
+      fetchBookings(pagination.page, pagination.limit)
+    } catch (err) {
+      enqueueSnackbar(err.response?.data?.message || 'Failed to create booking', { variant: 'error' })
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   const columns = [
     { key: 'bookingId', label: 'Booking ID' },
@@ -100,6 +120,7 @@ export default function Bookings() {
             <FilterListIcon />
           </IconButton>
           <Button variant="outlined" size="small" onClick={clearFilters}>Clear</Button>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => setModalOpen(true)}>Create</Button>
         </Box>
       </Box>
 
@@ -130,6 +151,7 @@ export default function Bookings() {
           emptyMessage="No bookings found"
         />
       )}
+      <BookingModal open={modalOpen} onClose={() => setModalOpen(false)} onSubmit={handleCreate} loading={submitting} />
     </Box>
   )
 }
