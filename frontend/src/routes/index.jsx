@@ -12,6 +12,7 @@ const Profile = lazy(() => import('../pages/profile/Profile'))
 const Settings = lazy(() => import('../pages/settings/Settings'))
 const Analytics = lazy(() => import('../pages/analytics/Analytics'))
 const Bookings = lazy(() => import('../pages/bookings/Bookings'))
+const Unauthorized = lazy(() => import('../pages/Unauthorized'))
 
 const LazyLoad = ({ children }) => <Suspense fallback={<Loader />}>{children}</Suspense>
 
@@ -20,11 +21,12 @@ export default function AppRoutes() {
     <Routes>
       <Route path="/login" element={<LazyLoad><Login /></LazyLoad>} />
       <Route path="/register" element={<LazyLoad><Register /></LazyLoad>} />
+      <Route path="/unauthorized" element={<LazyLoad><Unauthorized /></LazyLoad>} />
       <Route path="/" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
         <Route index element={<LazyLoad><Dashboard /></LazyLoad>} />
-        <Route path="users" element={<LazyLoad><Users /></LazyLoad>} />
+        <Route path="users" element={<ProtectedRoute roles={['admin']}><LazyLoad><Users /></LazyLoad></ProtectedRoute>} />
         <Route path="bookings" element={<LazyLoad><Bookings /></LazyLoad>} />
-        <Route path="analytics" element={<LazyLoad><Analytics /></LazyLoad>} />
+        <Route path="analytics" element={<ProtectedRoute roles={['admin']}><LazyLoad><Analytics /></LazyLoad></ProtectedRoute>} />
         <Route path="profile" element={<LazyLoad><Profile /></LazyLoad>} />
         <Route path="settings" element={<LazyLoad><Settings /></LazyLoad>} />
       </Route>

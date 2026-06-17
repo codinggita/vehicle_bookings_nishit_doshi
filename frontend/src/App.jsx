@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import { SnackbarProvider } from 'notistack'
+import ErrorBoundary from './components/ErrorBoundary'
 import AppRoutes from './routes'
 import { fetchProfile } from './store/slices/authSlice'
 import baseTheme from './app/theme'
@@ -31,7 +32,9 @@ export default function App() {
       <CssBaseline />
       <Helmet><title>Vehicle Bookings</title><meta name="description" content="Vehicle Bookings Management Dashboard" /></Helmet>
       <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} autoHideDuration={3000}>
-        <AppRoutes />
+        <ErrorBoundary>
+          <AppRoutes />
+        </ErrorBoundary>
       </SnackbarProvider>
     </ThemeProvider>
   )
