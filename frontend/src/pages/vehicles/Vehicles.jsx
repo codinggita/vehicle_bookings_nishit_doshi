@@ -1,9 +1,11 @@
 import { useState, useCallback, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { Table, Loader, EmptyState, ErrorState } from '../../components/ui'
+import FileDownloadIcon from '@mui/icons-material/FileDownload'
+import { Table, Loader, EmptyState, ErrorState, Button } from '../../components/ui'
 import { getVehicles } from '../../services/vehicleService'
 import SEO from '../../components/SEO'
+import { downloadCSV } from '../../utils/csv'
 
 export default function Vehicles() {
   const [rows, setRows] = useState([])
@@ -17,6 +19,14 @@ export default function Vehicles() {
     { key: 'totalRevenue', label: 'Revenue', render: (r) => `₹${(r.totalRevenue || 0).toLocaleString()}` },
     { key: 'totalDistance', label: 'Distance (km)', render: (r) => (r.totalDistance || 0).toLocaleString() },
     { key: 'avgDriverRating', label: 'Avg Rating', render: (r) => (r.avgDriverRating || 0).toFixed(1) },
+  ]
+
+  const csvFields = [
+    { key: 'vehicleType', label: 'Vehicle Type' },
+    { key: 'totalBookings', label: 'Bookings' },
+    { key: 'totalRevenue', label: 'Revenue', accessor: (r) => r.totalRevenue || 0 },
+    { key: 'totalDistance', label: 'Distance (km)', accessor: (r) => (r.totalDistance || 0).toLocaleString() },
+    { key: 'avgDriverRating', label: 'Avg Rating', accessor: (r) => (r.avgDriverRating || 0).toFixed(1) },
   ]
 
   const fetchData = useCallback(async (page = 0, limit = 10) => {
@@ -35,7 +45,10 @@ export default function Vehicles() {
   return (
     <Box>
       <SEO title="Vehicles" />
-      <Typography variant="h4" fontWeight={600} gutterBottom>Vehicles</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h4" fontWeight={600}>Vehicles</Typography>
+        <Button startIcon={<FileDownloadIcon />} onClick={() => downloadCSV(rows, csvFields, 'vehicles.csv')}>Export</Button>
+      </Box>
       {loading ? <Loader /> : error ? <ErrorState message={error} onRetry={() => fetchData()} /> : rows.length === 0 ? <EmptyState message="No vehicles found" /> : (
         <Table columns={columns} rows={rows} loading={false} page={pagination.page} rowsPerPage={pagination.limit} total={pagination.total} onPageChange={(_, page) => fetchData(page, pagination.limit)} onRowsPerPageChange={(e) => fetchData(0, parseInt(e.target.value))} />
       )}
