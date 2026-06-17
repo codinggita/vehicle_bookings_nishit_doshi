@@ -8,12 +8,14 @@ import IconButton from '@mui/material/IconButton'
 import Collapse from '@mui/material/Collapse'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import AddIcon from '@mui/icons-material/Add'
+import FileDownloadIcon from '@mui/icons-material/FileDownload'
 import { useSnackbar } from 'notistack'
 import { Table, Button, ErrorState, Loader } from '../../components/ui'
 import { getBookings, createBooking } from '../../services/bookingService'
 import BookingModal from '../../components/BookingModal'
 import useFilterPersistence from '../../hooks/useFilterPersistence'
 import SEO from '../../components/SEO'
+import { downloadCSV } from '../../utils/csv'
 
 const statusColors = {
   Success: 'success',
@@ -75,6 +77,18 @@ export default function Bookings() {
     }
   }
 
+  const csvFields = [
+    { label: 'Booking ID', accessor: 'bookingId' },
+    { label: 'Date', accessor: (r) => r.date ? new Date(r.date).toLocaleDateString() : '' },
+    { label: 'Vehicle', accessor: 'vehicleType' },
+    { label: 'Pickup', accessor: 'pickupLocation' },
+    { label: 'Drop', accessor: 'dropLocation' },
+    { label: 'Status', accessor: 'bookingStatus' },
+    { label: 'Value', accessor: (r) => r.bookingValue || 0 },
+    { label: 'Distance (km)', accessor: (r) => r.rideDistance?.toFixed(1) || 0 },
+    { label: 'Payment', accessor: 'paymentMethod' },
+  ]
+
   const columns = [
     { key: 'bookingId', label: 'Booking ID' },
     { key: 'date', label: 'Date', render: (r) => new Date(r.date).toLocaleDateString() },
@@ -121,6 +135,7 @@ export default function Bookings() {
           </IconButton>
           <Button variant="outlined" size="small" onClick={clearFilters}>Clear</Button>
           <Button variant="contained" startIcon={<AddIcon />} onClick={() => setModalOpen(true)}>Create</Button>
+          <Button variant="outlined" size="small" startIcon={<FileDownloadIcon />} onClick={() => downloadCSV(rows, csvFields, 'bookings')}>Export</Button>
         </Box>
       </Box>
 

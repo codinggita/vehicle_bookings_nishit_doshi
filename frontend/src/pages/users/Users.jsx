@@ -7,7 +7,9 @@ import Tooltip from '@mui/material/Tooltip'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import AddIcon from '@mui/icons-material/Add'
+import FileDownloadIcon from '@mui/icons-material/FileDownload'
 import { Table, Button, ErrorState, Loader } from '../../components/ui'
+import { downloadCSV } from '../../utils/csv'
 import UserModal from '../../components/UserModal'
 import DeleteConfirm from '../../components/DeleteConfirm'
 import { getUsers, createUser, updateUser, deleteUser } from '../../services/userService'
@@ -76,6 +78,13 @@ export default function Users() {
     }
   }
 
+  const csvFields = [
+    { label: 'Name', accessor: 'name' },
+    { label: 'Email', accessor: 'email' },
+    { label: 'Role', accessor: 'role' },
+    { label: 'Joined', accessor: (r) => r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '' },
+  ]
+
   const columns = [
     { key: 'name', label: 'Name' },
     { key: 'email', label: 'Email' },
@@ -99,7 +108,10 @@ export default function Users() {
       <SEO title="User Management" />
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h4" fontWeight={600}>Users</Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={handleOpenCreate}>Add User</Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button variant="outlined" startIcon={<FileDownloadIcon />} onClick={() => downloadCSV(rows, csvFields, 'users')}>Export</Button>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={handleOpenCreate}>Add User</Button>
+        </Box>
       </Box>
 
       {loading && rows.length === 0 ? <Loader /> : (
