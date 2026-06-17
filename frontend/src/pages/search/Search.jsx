@@ -9,6 +9,7 @@ import Chip from '@mui/material/Chip'
 import SearchIcon from '@mui/icons-material/Search'
 import { Table, Loader, EmptyState, ErrorState } from '../../components/ui'
 import { searchAll, searchByBookingId, searchByCustomerId, searchByPayment, searchByVehicle, searchByLocation, searchByCancelReason, searchByIncomplete, searchByRating } from '../../services/searchService'
+import SEO from '../../components/SEO'
 
 const modes = [
   { value: 'all', label: 'Keyword Search', params: ['keyword'] },
@@ -83,6 +84,7 @@ export default function Search() {
 
   return (
     <Box>
+      <SEO title="Search Bookings" />
       <Typography variant="h4" fontWeight={600} gutterBottom>Search</Typography>
       <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center', mb: 3 }}>
         <TextField select label="Search Mode" value={mode} onChange={(e) => setMode(e.target.value)} size="small" sx={{ minWidth: 200 }}>

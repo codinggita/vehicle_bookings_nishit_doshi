@@ -10,6 +10,7 @@ import FilterListIcon from '@mui/icons-material/FilterList'
 import { Table, Button, ErrorState, Loader } from '../../components/ui'
 import { getBookings } from '../../services/bookingService'
 import useFilterPersistence from '../../hooks/useFilterPersistence'
+import SEO from '../../components/SEO'
 
 const statusColors = {
   Success: 'success',
@@ -91,6 +92,7 @@ export default function Bookings() {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
+        <SEO title="Bookings" />
         <Typography variant="h4" fontWeight={600}>Bookings</Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <TextField size="small" placeholder="Search bookings..." value={search} onChange={handleSearch} sx={{ minWidth: 240 }} />

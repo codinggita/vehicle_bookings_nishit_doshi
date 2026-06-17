@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { Table, Loader, EmptyState, ErrorState } from '../../components/ui'
 import { getVehicles } from '../../services/vehicleService'
+import SEO from '../../components/SEO'
 
 export default function Vehicles() {
   const [rows, setRows] = useState([])
@@ -33,6 +34,7 @@ export default function Vehicles() {
 
   return (
     <Box>
+      <SEO title="Vehicles" />
       <Typography variant="h4" fontWeight={600} gutterBottom>Vehicles</Typography>
       {loading ? <Loader /> : error ? <ErrorState message={error} onRetry={() => fetchData()} /> : rows.length === 0 ? <EmptyState message="No vehicles found" /> : (
         <Table columns={columns} rows={rows} loading={false} page={pagination.page} rowsPerPage={pagination.limit} total={pagination.total} onPageChange={(_, page) => fetchData(page, pagination.limit)} onRowsPerPageChange={(e) => fetchData(0, parseInt(e.target.value))} />

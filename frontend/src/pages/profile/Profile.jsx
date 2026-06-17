@@ -8,6 +8,7 @@ import Alert from '@mui/material/Alert'
 import { Card, Input, Button } from '../../components/ui'
 import { fetchProfile } from '../../store/slices/authSlice'
 import api from '../../services/api'
+import SEO from '../../components/SEO'
 
 export default function Profile() {
   const { user } = useSelector((state) => state.auth)
@@ -41,6 +42,7 @@ export default function Profile() {
 
   return (
     <Box>
+      <SEO title="Profile" />
       <Typography variant="h4" fontWeight={600} gutterBottom>Profile</Typography>
       <Card sx={{ maxWidth: 500 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>

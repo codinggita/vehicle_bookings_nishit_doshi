@@ -11,6 +11,7 @@ import StarIcon from '@mui/icons-material/Star'
 import PlaceIcon from '@mui/icons-material/Place'
 import { getRevenueStats, getStatusDistribution, getLocationDemand, getRatingsSummary } from '../../services/analyticsService'
 import { ErrorState } from '../../components/ui'
+import SEO from '../../components/SEO'
 
 const COLORS = ['#1976d2', '#2e7d32', '#ed6c02', '#9c27b0', '#d32f2f', '#00796b', '#5c6bc0', '#ef5350']
 
@@ -60,6 +61,7 @@ export default function Analytics() {
 
   return (
     <Box>
+      <SEO title="Analytics" />
       <Typography variant="h4" fontWeight={600} gutterBottom>Analytics</Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

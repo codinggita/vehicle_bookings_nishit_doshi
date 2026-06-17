@@ -9,6 +9,7 @@ import DirectionsCarIcon from '@mui/icons-material/DirectionsCar'
 import PeopleIcon from '@mui/icons-material/People'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
 import StarIcon from '@mui/icons-material/Star'
+import SEO from '../../components/SEO'
 import { getRevenueStats } from '../../services/analyticsService'
 import { getStats } from '../../services/statsService'
 
@@ -56,6 +57,7 @@ export default function Dashboard() {
 
   return (
     <Box>
+      <SEO title="Dashboard" />
       <Typography variant="h4" fontWeight={600} gutterBottom>Welcome, {user?.name || 'User'}</Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
         {isAdmin ? 'Admin dashboard with full system overview.' : 'Your vehicle booking dashboard.'}

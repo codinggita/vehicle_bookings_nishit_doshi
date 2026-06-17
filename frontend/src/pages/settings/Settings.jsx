@@ -6,6 +6,7 @@ import Box from '@mui/material/Box'
 import Switch from '@mui/material/Switch'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import { toggleDarkMode } from '../../store/slices/uiSlice'
+import SEO from '../../components/SEO'
 
 export default function Settings() {
   const { darkMode } = useSelector((state) => state.ui)
@@ -13,6 +14,7 @@ export default function Settings() {
 
   return (
     <Box>
+      <SEO title="Settings" />
       <Typography variant="h4" fontWeight={600} gutterBottom>
         Settings
       </Typography>

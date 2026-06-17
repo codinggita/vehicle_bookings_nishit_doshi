@@ -11,6 +11,7 @@ import { Table, Button, EmptyState, ErrorState, Loader } from '../../components/
 import UserModal from '../../components/UserModal'
 import DeleteConfirm from '../../components/DeleteConfirm'
 import { getUsers, createUser, updateUser, deleteUser } from '../../services/userService'
+import SEO from '../../components/SEO'
 
 export default function Users() {
   const [rows, setRows] = useState([])
@@ -95,6 +96,7 @@ export default function Users() {
 
   return (
     <Box>
+      <SEO title="User Management" />
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h4" fontWeight={600}>Users</Typography>
         <Button variant="contained" startIcon={<AddIcon />} onClick={handleOpenCreate}>Add User</Button>
