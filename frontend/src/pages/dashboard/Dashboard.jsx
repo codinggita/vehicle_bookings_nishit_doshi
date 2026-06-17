@@ -10,7 +10,7 @@ import PeopleIcon from '@mui/icons-material/People'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
 import StarIcon from '@mui/icons-material/Star'
 import SEO from '../../components/SEO'
-import { getRevenueStats } from '../../services/analyticsService'
+import { getRevenueStats, getRatingsSummary } from '../../services/analyticsService'
 import { getStats } from '../../services/statsService'
 
 const StatCard = ({ title, value, icon, color }) => (
@@ -27,14 +27,19 @@ export default function Dashboard() {
   const { user } = useSelector((state) => state.auth)
   const isAdmin = user?.role === 'admin'
   const [revenueData, setRevenueData] = useState(null)
+  const [avgRating, setAvgRating] = useState(0)
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [{ data: rev }] = await Promise.all([getRevenueStats()])
+        const [{ data: rev }, { data: ratings }] = await Promise.all([getRevenueStats(), getRatingsSummary()])
         setRevenueData(rev.data)
+        if (ratings?.data?.length) {
+          const avg = ratings.data.reduce((s, r) => s + (r.avgDriverRating || 0), 0) / ratings.data.length
+          setAvgRating(avg)
+        }
         if (isAdmin) {
           const { data: st } = await getStats()
           setStats(st.data)
@@ -48,12 +53,8 @@ export default function Dashboard() {
     fetchData()
   }, [isAdmin])
 
-  const totalRevenue = useMemo(() => revenueData?.reduce((sum, r) => sum + (r.totalBookingValue || 0), 0) || 0, [revenueData])
-  const totalRides = useMemo(() => revenueData?.reduce((sum, r) => sum + (r.count || 0), 0) || 0, [revenueData])
-  const avgRating = useMemo(() => {
-    if (!revenueData?.length) return 0
-    return revenueData.reduce((sum, r) => sum + (r.avgDriverRating || 0), 0) / revenueData.length
-  }, [revenueData])
+  const totalRevenue = useMemo(() => revenueData?.reduce((sum, r) => sum + (r.totalRevenue || 0), 0) || 0, [revenueData])
+  const totalRides = useMemo(() => revenueData?.reduce((sum, r) => sum + (r.totalBookings || 0), 0) || 0, [revenueData])
 
   return (
     <Box>

@@ -1,6 +1,6 @@
 import api from './api'
 
-export const getStats = () => api.get('/stats/total-bookings').then(async () => {
+export const getStats = async () => {
   const [total, success, cancelled, topV, topP] = await Promise.all([
     api.get('/stats/total-bookings'),
     api.get('/stats/success-rides'),
@@ -11,7 +11,7 @@ export const getStats = () => api.get('/stats/total-bookings').then(async () => 
   return {
     data: {
       data: {
-        totalUsers: total.data.data?.total || 0,
+        totalUsers: total.data.data?.count || 0,
         successRides: success.data.data?.count || 0,
         cancelledRides: cancelled.data.data?.count || 0,
         topVehicle: topV.data.data?.vehicleType || 'N/A',
@@ -19,4 +19,4 @@ export const getStats = () => api.get('/stats/total-bookings').then(async () => 
       }
     }
   }
-})
+}

@@ -41,7 +41,9 @@ export default function Analytics() {
         ])
         setRevenue(r.data.data || [])
         setStatusDist(s.data.data || [])
-        setLocations(l.data.data || [])
+        const locData = l.data.data
+        const pickups = (locData?.topPickups || []).map(p => ({ pickupLocation: p.location, count: p.count }))
+        setLocations(pickups)
         setRatings(ra.data.data || [])
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load analytics')
@@ -54,8 +56,8 @@ export default function Analytics() {
 
   if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />
 
-  const totalRev = revenue.reduce((s, r) => s + (r.totalBookingValue || 0), 0)
-  const totalBookings = revenue.reduce((s, r) => s + (r.count || 0), 0)
+  const totalRev = revenue.reduce((s, r) => s + (r.totalRevenue || 0), 0)
+  const totalBookings = revenue.reduce((s, r) => s + (r.totalBookings || 0), 0)
   const avgDriverRating = ratings.reduce((s, r) => s + (r.avgDriverRating || 0), 0) / (ratings.length || 1)
   const topLocation = locations[0]?.pickupLocation || 'N/A'
 
@@ -87,8 +89,8 @@ export default function Analytics() {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="totalBookingValue" name="Revenue" fill="#1976d2" />
-                  <Bar dataKey="count" name="Count" fill="#2e7d32" />
+                  <Bar dataKey="totalRevenue" name="Revenue" fill="#1976d2" />
+                  <Bar dataKey="totalBookings" name="Count" fill="#2e7d32" />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -101,7 +103,7 @@ export default function Analytics() {
             {loading ? <Skeleton variant="rounded" height={300} /> : (
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
-                  <Pie data={statusDist} dataKey="count" nameKey="_id" cx="50%" cy="50%" outerRadius={100} label>
+                  <Pie data={statusDist} dataKey="count" nameKey="status" cx="50%" cy="50%" outerRadius={100} label>
                     {statusDist.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                   </Pie>
                   <Tooltip />
