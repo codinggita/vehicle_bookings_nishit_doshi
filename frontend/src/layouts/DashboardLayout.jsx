@@ -27,6 +27,11 @@ import DirectionsCarIcon from '@mui/icons-material/DirectionsCar'
 import AnalyticsIcon from '@mui/icons-material/Analytics'
 import PersonIcon from '@mui/icons-material/Person'
 import SettingsIcon from '@mui/icons-material/Settings'
+import SearchIcon from '@mui/icons-material/Search'
+import GroupIcon from '@mui/icons-material/Group'
+import TimeToLeaveIcon from '@mui/icons-material/TimeToLeave'
+import PaymentIcon from '@mui/icons-material/Payment'
+import StarIcon from '@mui/icons-material/Star'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import LogoutIcon from '@mui/icons-material/Logout'
@@ -104,12 +109,18 @@ const adminNavItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
   { text: 'Users', icon: <PeopleIcon />, path: '/users' },
   { text: 'Bookings', icon: <DirectionsCarIcon />, path: '/bookings' },
+  { text: 'Search', icon: <SearchIcon />, path: '/search' },
+  { text: 'Customers', icon: <GroupIcon />, path: '/customers' },
+  { text: 'Vehicles', icon: <TimeToLeaveIcon />, path: '/vehicles' },
+  { text: 'Payments', icon: <PaymentIcon />, path: '/payments' },
+  { text: 'Ratings', icon: <StarIcon />, path: '/ratings' },
   { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
 ]
 
 const userNavItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
   { text: 'Bookings', icon: <DirectionsCarIcon />, path: '/bookings' },
+  { text: 'Search', icon: <SearchIcon />, path: '/search' },
 ]
 
 const bottomNavItems = [
