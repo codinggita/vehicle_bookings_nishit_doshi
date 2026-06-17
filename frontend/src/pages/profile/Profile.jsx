@@ -7,7 +7,7 @@ import Chip from '@mui/material/Chip'
 import Alert from '@mui/material/Alert'
 import { Card, Input, Button } from '../../components/ui'
 import { fetchProfile } from '../../store/slices/authSlice'
-import api from '../../services/api'
+import { updateProfile as updateProfileService, changePassword as changePasswordService } from '../../services/authService'
 import SEO from '../../components/SEO'
 
 export default function Profile() {
@@ -18,6 +18,10 @@ export default function Profile() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' })
 
+  const [pwForm, setPwForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' })
+  const [pwLoading, setPwLoading] = useState(false)
+  const [pwMessage, setPwMessage] = useState({ type: '', text: '' })
+
   const startEdit = () => {
     setForm({ name: user?.name || '', email: user?.email || '', customerId: user?.customerId || '' })
     setEditing(true)
@@ -27,7 +31,7 @@ export default function Profile() {
     setLoading(true)
     setMessage({ type: '', text: '' })
     try {
-      await api.put('/auth/profile', form)
+      await updateProfileService(form)
       dispatch(fetchProfile())
       setMessage({ type: 'success', text: 'Profile updated successfully.' })
       setEditing(false)
@@ -39,6 +43,30 @@ export default function Profile() {
   }
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
+
+  const handlePwChange = (e) => setPwForm({ ...pwForm, [e.target.name]: e.target.value })
+
+  const handlePwSubmit = async () => {
+    setPwMessage({ type: '', text: '' })
+    if (pwForm.newPassword !== pwForm.confirmPassword) {
+      setPwMessage({ type: 'error', text: 'Passwords do not match.' })
+      return
+    }
+    if (pwForm.newPassword.length < 6) {
+      setPwMessage({ type: 'error', text: 'Password must be at least 6 characters.' })
+      return
+    }
+    setPwLoading(true)
+    try {
+      await changePasswordService({ currentPassword: pwForm.currentPassword, newPassword: pwForm.newPassword })
+      setPwMessage({ type: 'success', text: 'Password changed successfully.' })
+      setPwForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
+    } catch (err) {
+      setPwMessage({ type: 'error', text: err.response?.data?.message || 'Password change failed.' })
+    } finally {
+      setPwLoading(false)
+    }
+  }
 
   return (
     <Box>
@@ -75,6 +103,19 @@ export default function Profile() {
             <Button variant="outlined" onClick={startEdit}>Edit Profile</Button>
           </Box>
         )}
+      </Card>
+
+      <Card sx={{ maxWidth: 500, mt: 3 }}>
+        <Box sx={{ p: 0 }}>
+          <Typography variant="h6" fontWeight={600} gutterBottom sx={{ px: 2, pt: 2 }}>Change Password</Typography>
+          {pwMessage.text && <Alert severity={pwMessage.type} sx={{ mx: 2, mb: 2 }}>{pwMessage.text}</Alert>}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, px: 2, pb: 2 }}>
+            <Input label="Current Password" name="currentPassword" type="password" value={pwForm.currentPassword} onChange={handlePwChange} />
+            <Input label="New Password" name="newPassword" type="password" value={pwForm.newPassword} onChange={handlePwChange} />
+            <Input label="Confirm New Password" name="confirmPassword" type="password" value={pwForm.confirmPassword} onChange={handlePwChange} />
+            <Button variant="contained" onClick={handlePwSubmit} loading={pwLoading}>Change Password</Button>
+          </Box>
+        </Box>
       </Card>
     </Box>
   )
