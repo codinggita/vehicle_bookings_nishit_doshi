@@ -13,7 +13,7 @@ import { getRevenueStats, getStatusDistribution, getLocationDemand, getRatingsSu
 import { ErrorState } from '../../components/ui'
 import SEO from '../../components/SEO'
 
-const COLORS = ['#1976d2', '#2e7d32', '#ed6c02', '#9c27b0', '#d32f2f', '#00796b', '#5c6bc0', '#ef5350']
+const COLORS = ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#3b82f6']
 
 const StatCard = ({ title, value, icon, color }) => (
   <Paper sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }} elevation={1}>
@@ -69,10 +69,10 @@ export default function Analytics() {
       <Grid container spacing={3} sx={{ mb: 3 }}>
         {loading ? [1,2,3,4].map(i => <Grid item xs={12} sm={6} md={3} key={i}><Skeleton variant="rounded" height={80} /></Grid>) : (
           <>
-            <Grid item xs={12} sm={6} md={3}><StatCard title="Total Revenue" value={`₹${totalRev.toLocaleString()}`} icon={<AttachMoneyIcon />} color="#2e7d32" /></Grid>
-            <Grid item xs={12} sm={6} md={3}><StatCard title="Total Bookings" value={totalBookings.toLocaleString()} icon={<DirectionsCarIcon />} color="#1976d2" /></Grid>
-            <Grid item xs={12} sm={6} md={3}><StatCard title="Avg Driver Rating" value={avgDriverRating.toFixed(1)} icon={<StarIcon />} color="#ed6c02" /></Grid>
-            <Grid item xs={12} sm={6} md={3}><StatCard title="Top Location" value={topLocation} icon={<PlaceIcon />} color="#9c27b0" /></Grid>
+            <Grid item xs={12} sm={6} md={3}><StatCard title="Total Revenue" value={`₹${totalRev.toLocaleString()}`} icon={<AttachMoneyIcon />} color="#10b981" /></Grid>
+            <Grid item xs={12} sm={6} md={3}><StatCard title="Total Bookings" value={totalBookings.toLocaleString()} icon={<DirectionsCarIcon />} color="#6366f1" /></Grid>
+            <Grid item xs={12} sm={6} md={3}><StatCard title="Avg Driver Rating" value={avgDriverRating.toFixed(1)} icon={<StarIcon />} color="#f59e0b" /></Grid>
+            <Grid item xs={12} sm={6} md={3}><StatCard title="Top Location" value={topLocation} icon={<PlaceIcon />} color="#06b6d4" /></Grid>
           </>
         )}
       </Grid>
@@ -84,13 +84,13 @@ export default function Analytics() {
             {loading ? <Skeleton variant="rounded" height={300} /> : (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={revenue}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="vehicleType" />
-                  <YAxis />
-                  <Tooltip />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis dataKey="vehicleType" tickLine={false} style={{ fontSize: 12 }} />
+                  <YAxis tickLine={false} style={{ fontSize: 12 }} />
+                  <Tooltip contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }} />
                   <Legend />
-                  <Bar dataKey="totalRevenue" name="Revenue" fill="#1976d2" />
-                  <Bar dataKey="totalBookings" name="Count" fill="#2e7d32" />
+                  <Bar dataKey="totalRevenue" name="Revenue" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={25} />
+                  <Bar dataKey="totalBookings" name="Count" fill="#10b981" radius={[4, 4, 0, 0]} barSize={25} />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -120,11 +120,11 @@ export default function Analytics() {
             {loading ? <Skeleton variant="rounded" height={300} /> : (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={locations.slice(0, 10)} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" />
-                  <YAxis type="category" dataKey="pickupLocation" width={120} />
-                  <Tooltip />
-                  <Bar dataKey="count" fill="#ed6c02" />
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
+                  <XAxis type="number" tickLine={false} style={{ fontSize: 12 }} />
+                  <YAxis type="category" dataKey="pickupLocation" width={120} tickLine={false} style={{ fontSize: 12 }} />
+                  <Tooltip contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }} />
+                  <Bar dataKey="count" fill="#6366f1" radius={[0, 4, 4, 0]} barSize={15} />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -137,13 +137,13 @@ export default function Analytics() {
             {loading ? <Skeleton variant="rounded" height={300} /> : (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={ratings}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="vehicleType" />
-                  <YAxis domain={[0, 5]} />
-                  <Tooltip />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis dataKey="vehicleType" tickLine={false} style={{ fontSize: 12 }} />
+                  <YAxis domain={[0, 5]} tickLine={false} style={{ fontSize: 12 }} />
+                  <Tooltip contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }} />
                   <Legend />
-                  <Bar dataKey="avgDriverRating" name="Driver Rating" fill="#1976d2" />
-                  <Bar dataKey="avgCustomerRating" name="Customer Rating" fill="#9c27b0" />
+                  <Bar dataKey="avgDriverRating" name="Driver Rating" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={20} />
+                  <Bar dataKey="avgCustomerRating" name="Customer Rating" fill="#06b6d4" radius={[4, 4, 0, 0]} barSize={20} />
                 </BarChart>
               </ResponsiveContainer>
             )}
