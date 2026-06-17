@@ -7,6 +7,7 @@ import Tooltip from '@mui/material/Tooltip'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import AddIcon from '@mui/icons-material/Add'
+import { useSnackbar } from 'notistack'
 import { Table, Button, ErrorState, Loader } from '../../components/ui'
 import UserModal from '../../components/UserModal'
 import DeleteConfirm from '../../components/DeleteConfirm'
@@ -22,6 +23,7 @@ export default function Users() {
   const [editUser, setEditUser] = useState(null)
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [submitting, setSubmitting] = useState(false)
+  const { enqueueSnackbar } = useSnackbar()
 
   const fetchUsers = useCallback(async (page = 0, limit = 10) => {
     setLoading(true)
@@ -54,9 +56,10 @@ export default function Users() {
         await createUser(values)
       }
       setModalOpen(false)
+      enqueueSnackbar(editUser ? 'User updated successfully' : 'User created successfully', { variant: 'success' })
       fetchUsers(pagination.page, pagination.limit)
     } catch (err) {
-      alert(err.response?.data?.message || 'Operation failed')
+      enqueueSnackbar(err.response?.data?.message || 'Operation failed', { variant: 'error' })
     } finally {
       setSubmitting(false)
     }
@@ -68,9 +71,10 @@ export default function Users() {
     try {
       await deleteUser(deleteTarget._id)
       setDeleteTarget(null)
+      enqueueSnackbar('User deleted successfully', { variant: 'success' })
       fetchUsers(pagination.page, pagination.limit)
     } catch (err) {
-      alert(err.response?.data?.message || 'Delete failed')
+      enqueueSnackbar(err.response?.data?.message || 'Delete failed', { variant: 'error' })
     } finally {
       setSubmitting(false)
     }
