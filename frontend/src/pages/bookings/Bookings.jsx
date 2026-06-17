@@ -11,6 +11,9 @@ import FilterListIcon from '@mui/icons-material/FilterList'
 import AddIcon from '@mui/icons-material/Add'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'
 import DeleteIcon from '@mui/icons-material/Delete'
+import SearchIcon from '@mui/icons-material/Search'
+import InputAdornment from '@mui/material/InputAdornment'
+import Paper from '@mui/material/Paper'
 import { useSnackbar } from 'notistack'
 import { Table, Button, ErrorState, Loader } from '../../components/ui'
 import { getBookings, createBooking, deleteBooking } from '../../services/bookingService'
@@ -157,8 +160,23 @@ export default function Bookings() {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
         <SEO title="Bookings" />
         <Typography variant="h4" fontWeight={600}>Bookings</Typography>
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <TextField size="small" placeholder="Search bookings..." value={search} onChange={handleSearch} sx={{ minWidth: 240 }} />
+        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+          <TextField 
+            size="small" 
+            placeholder="Search bookings..." 
+            value={search} 
+            onChange={handleSearch} 
+            sx={{ minWidth: 240 }}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" color="action" />
+                  </InputAdornment>
+                )
+              }
+            }}
+          />
           <IconButton onClick={() => setShowFilters(!showFilters)} color={showFilters ? 'primary' : 'default'}>
             <FilterListIcon />
           </IconButton>
@@ -169,7 +187,18 @@ export default function Bookings() {
       </Box>
 
       <Collapse in={showFilters}>
-        <Box sx={{ display: 'flex', gap: 1.5, mb: 2, flexWrap: 'wrap', p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
+        <Paper 
+          elevation={1} 
+          sx={{ 
+            display: 'flex', 
+            gap: 1.5, 
+            mb: 3, 
+            flexWrap: 'wrap', 
+            p: 2.5, 
+            borderRadius: 3,
+            border: (theme) => `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(226, 232, 240, 0.8)'}`,
+          }}
+        >
           {filterFields.map((f) => (
             f.options ? (
               <TextField key={f.name} select size="small" label={f.label} name={f.name} value={filters[f.name]} onChange={handleFilterChange} sx={{ minWidth: 150 }}>
@@ -179,7 +208,7 @@ export default function Bookings() {
               <TextField key={f.name} size="small" label={f.label} name={f.name} type={f.type || 'text'} value={filters[f.name]} onChange={handleFilterChange} sx={{ minWidth: 120 }} />
             )
           ))}
-        </Box>
+        </Paper>
       </Collapse>
 
       {loading && rows.length === 0 ? <Loader /> : (
