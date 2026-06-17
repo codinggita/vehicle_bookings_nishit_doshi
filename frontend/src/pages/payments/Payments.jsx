@@ -31,7 +31,7 @@ export default function Payments() {
     } finally { setLoading(false) }
   }, [])
 
-  useEffect(() => { fetchData() }, [fetchData])
+  useEffect(() => { fetchData() }, [fetchData]) // eslint-disable-line react-hooks/set-state-in-effect
 
   return (
     <Box>

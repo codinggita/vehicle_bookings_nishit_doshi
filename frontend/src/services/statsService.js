@@ -1,6 +1,6 @@
 import api from './api'
 
-export const getStats = () => api.get('/stats/total-bookings').then(async (res) => {
+export const getStats = () => api.get('/stats/total-bookings').then(async () => {
   const [total, success, cancelled, topV, topP] = await Promise.all([
     api.get('/stats/total-bookings'),
     api.get('/stats/success-rides'),

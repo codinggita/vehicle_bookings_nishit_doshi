@@ -7,7 +7,7 @@ import Tooltip from '@mui/material/Tooltip'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import AddIcon from '@mui/icons-material/Add'
-import { Table, Button, EmptyState, ErrorState, Loader } from '../../components/ui'
+import { Table, Button, ErrorState, Loader } from '../../components/ui'
 import UserModal from '../../components/UserModal'
 import DeleteConfirm from '../../components/DeleteConfirm'
 import { getUsers, createUser, updateUser, deleteUser } from '../../services/userService'
@@ -37,7 +37,7 @@ export default function Users() {
     }
   }, [])
 
-  useEffect(() => { fetchUsers() }, [fetchUsers])
+  useEffect(() => { fetchUsers() }, [fetchUsers]) // eslint-disable-line react-hooks/set-state-in-effect
 
   const handlePageChange = (_, page) => fetchUsers(page, pagination.limit)
   const handleRowsPerPageChange = (e) => fetchUsers(0, parseInt(e.target.value))

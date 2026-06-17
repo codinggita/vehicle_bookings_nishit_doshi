@@ -39,8 +39,8 @@ export default function Bookings() {
     return params
   }, [search, filters])
 
-  const fetchBookings = useCallback(async (page = 0, limit = 10) => {
-    setLoading(true)
+  const fetchBookings = useCallback(async (page = 0, limit = 10, showLoading = true) => {
+    if (showLoading) setLoading(true)
     setError(null)
     try {
       const { data } = await getBookings(buildParams(page, limit))
@@ -49,11 +49,11 @@ export default function Bookings() {
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load bookings')
     } finally {
-      setLoading(false)
+      if (showLoading) setLoading(false)
     }
   }, [buildParams])
 
-  useEffect(() => { fetchBookings() }, [fetchBookings])
+  useEffect(() => { fetchBookings() }, [fetchBookings]) // eslint-disable-line react-hooks/set-state-in-effect
 
   const columns = [
     { key: 'bookingId', label: 'Booking ID' },

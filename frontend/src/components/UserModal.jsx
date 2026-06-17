@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import Box from '@mui/material/Box'
@@ -33,7 +33,7 @@ export default function UserModal({ open, onClose, onSubmit, initial, loading })
         formik.resetForm()
       }
     }
-  }, [open, initial])
+  }, [open, initial, formik])
 
   return (
     <Modal
