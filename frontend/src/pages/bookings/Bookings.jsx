@@ -5,14 +5,17 @@ import Chip from '@mui/material/Chip'
 import TextField from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'
 import IconButton from '@mui/material/IconButton'
+import Tooltip from '@mui/material/Tooltip'
 import Collapse from '@mui/material/Collapse'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import AddIcon from '@mui/icons-material/Add'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'
+import DeleteIcon from '@mui/icons-material/Delete'
 import { useSnackbar } from 'notistack'
 import { Table, Button, ErrorState, Loader } from '../../components/ui'
-import { getBookings, createBooking } from '../../services/bookingService'
+import { getBookings, createBooking, deleteBooking } from '../../services/bookingService'
 import BookingModal from '../../components/BookingModal'
+import DeleteConfirm from '../../components/DeleteConfirm'
 import useFilterPersistence from '../../hooks/useFilterPersistence'
 import SEO from '../../components/SEO'
 import { downloadCSV } from '../../utils/csv'
@@ -31,6 +34,7 @@ export default function Bookings() {
   const [error, setError] = useState(null)
   const [showFilters, setShowFilters] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState(null)
   const [submitting, setSubmitting] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
 
@@ -77,6 +81,21 @@ export default function Bookings() {
     }
   }
 
+  const handleDelete = async () => {
+    if (!deleteTarget) return
+    setSubmitting(true)
+    try {
+      await deleteBooking(deleteTarget.bookingId)
+      enqueueSnackbar('Booking deleted successfully', { variant: 'success' })
+      setDeleteTarget(null)
+      fetchBookings(pagination.page, pagination.limit)
+    } catch (err) {
+      enqueueSnackbar(err.response?.data?.message || 'Delete failed', { variant: 'error' })
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   const csvFields = [
     { label: 'Booking ID', accessor: 'bookingId' },
     { label: 'Date', accessor: (r) => r.date ? new Date(r.date).toLocaleDateString() : '' },
@@ -99,6 +118,16 @@ export default function Bookings() {
     { key: 'bookingValue', label: 'Value (₹)', render: (r) => r.bookingValue?.toLocaleString() },
     { key: 'rideDistance', label: 'Dist (km)', render: (r) => r.rideDistance?.toFixed(1) },
     { key: 'paymentMethod', label: 'Payment' },
+    {
+      key: 'actions', label: 'Actions',
+      render: (r) => (
+        <Tooltip title="Delete">
+          <IconButton size="small" color="error" onClick={() => setDeleteTarget(r)}>
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      ),
+    },
   ]
 
   const filterFields = [
@@ -167,6 +196,7 @@ export default function Bookings() {
         />
       )}
       <BookingModal open={modalOpen} onClose={() => setModalOpen(false)} onSubmit={handleCreate} loading={submitting} />
+      <DeleteConfirm open={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete} message={`Delete booking "${deleteTarget?.bookingId}"?`} loading={submitting} />
     </Box>
   )
 }

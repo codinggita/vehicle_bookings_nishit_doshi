@@ -2,9 +2,11 @@ import { useState, useCallback, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Rating from '@mui/material/Rating'
-import { Table, Loader, EmptyState, ErrorState } from '../../components/ui'
+import FileDownloadIcon from '@mui/icons-material/FileDownload'
+import { Table, Loader, EmptyState, ErrorState, Button } from '../../components/ui'
 import { getRatings } from '../../services/ratingService'
 import SEO from '../../components/SEO'
+import { downloadCSV } from '../../utils/csv'
 
 export default function Ratings() {
   const [rows, setRows] = useState([])
@@ -19,6 +21,15 @@ export default function Ratings() {
     { key: 'customerRating', label: 'Customer Rating', render: (r) => <Rating value={r.customerRating || 0} readOnly size="small" /> },
     { key: 'vehicleType', label: 'Vehicle' },
     { key: 'date', label: 'Date', render: (r) => r.date ? new Date(r.date).toLocaleDateString() : '-' },
+  ]
+
+  const csvFields = [
+    { key: 'bookingId', label: 'Booking ID' },
+    { key: 'customerId', label: 'Customer ID' },
+    { key: 'driverRating', label: 'Driver Rating', accessor: (r) => r.driverRating || 0 },
+    { key: 'customerRating', label: 'Customer Rating', accessor: (r) => r.customerRating || 0 },
+    { key: 'vehicleType', label: 'Vehicle' },
+    { key: 'date', label: 'Date', accessor: (r) => r.date ? new Date(r.date).toLocaleDateString() : '-' },
   ]
 
   const fetchData = useCallback(async (page = 0, limit = 10) => {
@@ -37,7 +48,10 @@ export default function Ratings() {
   return (
     <Box>
       <SEO title="Ratings" />
-      <Typography variant="h4" fontWeight={600} gutterBottom>Ratings</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h4" fontWeight={600}>Ratings</Typography>
+        <Button startIcon={<FileDownloadIcon />} onClick={() => downloadCSV(rows, csvFields, 'ratings.csv')}>Export</Button>
+      </Box>
       {loading ? <Loader /> : error ? <ErrorState message={error} onRetry={() => fetchData()} /> : rows.length === 0 ? <EmptyState message="No ratings found" /> : (
         <Table columns={columns} rows={rows} loading={false} page={pagination.page} rowsPerPage={pagination.limit} total={pagination.total} onPageChange={(_, page) => fetchData(page, pagination.limit)} onRowsPerPageChange={(e) => fetchData(0, parseInt(e.target.value))} />
       )}

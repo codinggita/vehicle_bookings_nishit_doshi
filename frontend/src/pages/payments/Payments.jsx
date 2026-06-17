@@ -2,9 +2,11 @@ import { useState, useCallback, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
-import { Table, Loader, EmptyState, ErrorState } from '../../components/ui'
+import FileDownloadIcon from '@mui/icons-material/FileDownload'
+import { Table, Loader, EmptyState, ErrorState, Button } from '../../components/ui'
 import { getPayments } from '../../services/paymentService'
 import SEO from '../../components/SEO'
+import { downloadCSV } from '../../utils/csv'
 
 export default function Payments() {
   const [rows, setRows] = useState([])
@@ -18,6 +20,14 @@ export default function Payments() {
     { key: 'bookingValue', label: 'Amount', render: (r) => `₹${(r.bookingValue || 0).toLocaleString()}` },
     { key: 'date', label: 'Date', render: (r) => r.date ? new Date(r.date).toLocaleDateString() : '-' },
     { key: 'bookingStatus', label: 'Status', render: (r) => <Chip label={r.bookingStatus || '-'} size="small" color={r.bookingStatus === 'Success' ? 'success' : 'default'} /> },
+  ]
+
+  const csvFields = [
+    { key: 'bookingId', label: 'Booking ID' },
+    { key: 'paymentMethod', label: 'Method' },
+    { key: 'bookingValue', label: 'Amount', accessor: (r) => r.bookingValue || 0 },
+    { key: 'date', label: 'Date', accessor: (r) => r.date ? new Date(r.date).toLocaleDateString() : '-' },
+    { key: 'bookingStatus', label: 'Status' },
   ]
 
   const fetchData = useCallback(async (page = 0, limit = 10) => {
@@ -36,7 +46,10 @@ export default function Payments() {
   return (
     <Box>
       <SEO title="Payments" />
-      <Typography variant="h4" fontWeight={600} gutterBottom>Payments</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h4" fontWeight={600}>Payments</Typography>
+        <Button startIcon={<FileDownloadIcon />} onClick={() => downloadCSV(rows, csvFields, 'payments.csv')}>Export</Button>
+      </Box>
       {loading ? <Loader /> : error ? <ErrorState message={error} onRetry={() => fetchData()} /> : rows.length === 0 ? <EmptyState message="No payments found" /> : (
         <Table columns={columns} rows={rows} loading={false} page={pagination.page} rowsPerPage={pagination.limit} total={pagination.total} onPageChange={(_, page) => fetchData(page, pagination.limit)} onRowsPerPageChange={(e) => fetchData(0, parseInt(e.target.value))} />
       )}

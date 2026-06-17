@@ -4,10 +4,12 @@ import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
 import SearchIcon from '@mui/icons-material/Search'
-import { Table, Loader, EmptyState, ErrorState } from '../../components/ui'
+import FileDownloadIcon from '@mui/icons-material/FileDownload'
+import { Table, Loader, EmptyState, ErrorState, Button } from '../../components/ui'
 import { getCustomers } from '../../services/customerService'
 import useFilterPersistence from '../../hooks/useFilterPersistence'
 import SEO from '../../components/SEO'
+import { downloadCSV } from '../../utils/csv'
 
 export default function Customers() {
   const [filters, setFilter] = useFilterPersistence('customers_filters', { search: '' })
@@ -37,6 +39,14 @@ export default function Customers() {
     } finally { setLoading(false) }
   }, [filters])
 
+  const csvFields = [
+    { key: 'customerId', label: 'Customer ID' },
+    { key: 'totalBookings', label: 'Bookings' },
+    { key: 'totalSpent', label: 'Total Spent', accessor: (r) => r.totalSpent || 0 },
+    { key: 'avgDriverRating', label: 'Avg Rating', accessor: (r) => (r.avgDriverRating || 0).toFixed(1) },
+    { key: 'lastBookingDate', label: 'Last Booking', accessor: (r) => r.lastBookingDate ? new Date(r.lastBookingDate).toLocaleDateString() : '-' },
+  ]
+
   useEffect(() => { fetchData() }, [fetchData]) // eslint-disable-line react-hooks/set-state-in-effect
 
   return (
@@ -44,7 +54,10 @@ export default function Customers() {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
         <SEO title="Customers" />
         <Typography variant="h4" fontWeight={600}>Customers</Typography>
-        <TextField size="small" placeholder="Search customers..." value={filters.search || ''} onChange={(e) => setFilter('search', e.target.value)} slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> } }} />
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <TextField size="small" placeholder="Search customers..." value={filters.search || ''} onChange={(e) => setFilter('search', e.target.value)} slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> } }} />
+          <Button startIcon={<FileDownloadIcon />} onClick={() => downloadCSV(rows, csvFields, 'customers.csv')}>Export</Button>
+        </Box>
       </Box>
       {loading ? <Loader /> : error ? <ErrorState message={error} onRetry={() => fetchData()} /> : rows.length === 0 ? <EmptyState message="No customers found" /> : (
         <Table columns={columns} rows={rows} loading={false} page={pagination.page} rowsPerPage={pagination.limit} total={pagination.total} onPageChange={(_, page) => fetchData(page, pagination.limit)} onRowsPerPageChange={(e) => fetchData(0, parseInt(e.target.value))} />
