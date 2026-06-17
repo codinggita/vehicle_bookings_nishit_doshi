@@ -11,6 +11,7 @@ import Link from '@mui/material/Link'
 import Alert from '@mui/material/Alert'
 import CircularProgress from '@mui/material/CircularProgress'
 import { login, clearError } from '../../store/slices/authSlice'
+import SEO from '../../components/SEO'
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' })
@@ -35,6 +36,7 @@ export default function Login() {
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default' }}>
+      <SEO title="Sign In" noIndex />
       <Card sx={{ maxWidth: 420, width: '100%', mx: 2 }}>
         <CardContent sx={{ p: 4 }}>
           <Typography variant="h5" fontWeight={600} gutterBottom align="center">

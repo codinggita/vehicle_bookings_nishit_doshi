@@ -36,6 +36,7 @@ import DarkModeIcon from '@mui/icons-material/DarkMode'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import LogoutIcon from '@mui/icons-material/Logout'
 
+import SchemaOrg from '../components/SchemaOrg'
 import { logout } from '../store/slices/authSlice'
 import { toggleDarkMode } from '../store/slices/uiSlice'
 
@@ -149,6 +150,7 @@ export default function DashboardLayout() {
 
   return (
     <Box sx={{ display: 'flex' }}>
+      <SchemaOrg />
       <AppBar position="fixed" open={open}>
         <Toolbar>
           <IconButton color="inherit" onClick={handleDrawerToggle} edge="start" sx={{ mr: 2 }}>

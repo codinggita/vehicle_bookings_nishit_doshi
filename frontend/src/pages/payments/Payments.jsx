@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
 import { Table, Loader, EmptyState, ErrorState } from '../../components/ui'
 import { getPayments } from '../../services/paymentService'
+import SEO from '../../components/SEO'
 
 export default function Payments() {
   const [rows, setRows] = useState([])
@@ -34,6 +35,7 @@ export default function Payments() {
 
   return (
     <Box>
+      <SEO title="Payments" />
       <Typography variant="h4" fontWeight={600} gutterBottom>Payments</Typography>
       {loading ? <Loader /> : error ? <ErrorState message={error} onRetry={() => fetchData()} /> : rows.length === 0 ? <EmptyState message="No payments found" /> : (
         <Table columns={columns} rows={rows} loading={false} page={pagination.page} rowsPerPage={pagination.limit} total={pagination.total} onPageChange={(_, page) => fetchData(page, pagination.limit)} onRowsPerPageChange={(e) => fetchData(0, parseInt(e.target.value))} />

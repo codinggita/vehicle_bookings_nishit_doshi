@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography'
 import Rating from '@mui/material/Rating'
 import { Table, Loader, EmptyState, ErrorState } from '../../components/ui'
 import { getRatings } from '../../services/ratingService'
+import SEO from '../../components/SEO'
 
 export default function Ratings() {
   const [rows, setRows] = useState([])
@@ -35,6 +36,7 @@ export default function Ratings() {
 
   return (
     <Box>
+      <SEO title="Ratings" />
       <Typography variant="h4" fontWeight={600} gutterBottom>Ratings</Typography>
       {loading ? <Loader /> : error ? <ErrorState message={error} onRetry={() => fetchData()} /> : rows.length === 0 ? <EmptyState message="No ratings found" /> : (
         <Table columns={columns} rows={rows} loading={false} page={pagination.page} rowsPerPage={pagination.limit} total={pagination.total} onPageChange={(_, page) => fetchData(page, pagination.limit)} onRowsPerPageChange={(e) => fetchData(0, parseInt(e.target.value))} />

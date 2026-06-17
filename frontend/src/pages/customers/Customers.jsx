@@ -7,6 +7,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import { Table, Loader, EmptyState, ErrorState } from '../../components/ui'
 import { getCustomers } from '../../services/customerService'
 import useFilterPersistence from '../../hooks/useFilterPersistence'
+import SEO from '../../components/SEO'
 
 export default function Customers() {
   const [filters, setFilter, resetFilters] = useFilterPersistence('customers_filters', { search: '' })
@@ -41,6 +42,7 @@ export default function Customers() {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
+        <SEO title="Customers" />
         <Typography variant="h4" fontWeight={600}>Customers</Typography>
         <TextField size="small" placeholder="Search customers..." value={filters.search || ''} onChange={(e) => setFilter('search', e.target.value)} slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> } }} />
       </Box>

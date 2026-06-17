@@ -11,6 +11,7 @@ import Link from '@mui/material/Link'
 import Alert from '@mui/material/Alert'
 import CircularProgress from '@mui/material/CircularProgress'
 import { register, clearError } from '../../store/slices/authSlice'
+import SEO from '../../components/SEO'
 
 export default function Register() {
   const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' })
@@ -41,6 +42,7 @@ export default function Register() {
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default' }}>
+      <SEO title="Create Account" noIndex />
       <Card sx={{ maxWidth: 420, width: '100%', mx: 2 }}>
         <CardContent sx={{ p: 4 }}>
           <Typography variant="h5" fontWeight={600} gutterBottom align="center">
