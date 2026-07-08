@@ -27,6 +27,7 @@ const logRoutes        = require('./routes/logRoutes');
 const middlewareRoutes  = require('./routes/middlewareRoutes');
 const statsRoutes       = require('./routes/statsRoutes');
 const jwtRoutes         = require('./routes/jwtRoutes');
+const publicRoutes      = require('./routes/publicRoutes');
 
 connectDB();
 
@@ -59,6 +60,7 @@ app.get('/api/v1/version', advanceController.getVersion);
 app.get('/compare', require('./middlewares/auth').protect, advanceController.compareBookings);
 app.get('/api/v1/compare', require('./middlewares/auth').protect, advanceController.compareBookings);
 
+app.use('/api/v1/public',    publicRoutes);
 app.use('/api/v1/auth',      authRoutes);
 app.use('/api/v1/users',     userRoutes);
 app.use('/api/v1/bookings',  bookingRoutes);
