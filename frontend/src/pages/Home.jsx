@@ -34,6 +34,28 @@ const FLEET_CATEGORIES = {
   ]
 }
 
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="backdrop-blur-md bg-slate-950/90 border border-slate-800/80 p-4 rounded-xl shadow-2xl">
+        <p className="text-xs font-bold text-slate-450 mb-2 uppercase tracking-wider">{label}</p>
+        {payload.map((pld, index) => (
+          <div key={index} className="flex items-center justify-between gap-6 text-sm py-1">
+            <span className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: pld.color || pld.fill || (pld.name === 'totalRevenue' ? '#6366f1' : '#06b6d4') }} />
+              <span className="text-slate-300 font-light">{pld.name === 'totalRevenue' ? 'Revenue' : 'Bookings'}</span>
+            </span>
+            <span className="font-semibold text-white">
+              {pld.name === 'totalRevenue' ? `₹${pld.value.toLocaleString()}` : pld.value.toLocaleString()}
+            </span>
+          </div>
+        ))}
+      </div>
+    )
+  }
+  return null
+}
+
 export default function Home() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -44,6 +66,7 @@ export default function Home() {
 
   const [statsData, setStatsData] = useState(null)
   const [loadingStats, setLoadingStats] = useState(true)
+  const [chartView, setChartView] = useState('combined')
 
   useEffect(() => {
     let active = true
@@ -309,28 +332,32 @@ export default function Home() {
       </section>
 
       {/* Live System Dashboard Section */}
-      <section id="live-dashboard" className="border-y border-slate-800/60 bg-[#070b13] py-24 px-6 relative">
-        <div className="absolute top-[20%] left-[10%] w-[35%] h-[35%] bg-indigo-500/5 rounded-full blur-[130px] pointer-events-none" />
-        <div className="absolute bottom-[20%] right-[10%] w-[35%] h-[35%] bg-cyan-500/5 rounded-full blur-[130px] pointer-events-none" />
+      <section id="live-dashboard" className="border-y border-slate-800/60 bg-[#070b13] bg-[radial-gradient(#ffffff07_1px,transparent_1px)] [background-size:24px_24px] py-24 px-6 relative overflow-hidden">
+        {/* Glowing Background Spots */}
+        <div className="absolute top-[10%] left-[-5%] w-[45%] h-[45%] bg-indigo-500/5 rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute bottom-[10%] right-[-5%] w-[45%] h-[45%] bg-cyan-500/5 rounded-full blur-[140px] pointer-events-none" />
         
-        <div className="container mx-auto max-w-7xl">
+        <div className="container mx-auto max-w-7xl relative">
           {/* Section Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
             <div className="space-y-4">
               <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs font-semibold text-emerald-400 tracking-wide uppercase">
                 <span className="flex h-2 w-2 rounded-full bg-emerald-400" />
                 <span className="flex h-2 w-2 absolute rounded-full bg-emerald-400 animate-ping" />
-                Live System Dashboard
+                Live Operational Metrics
               </div>
-              <h2 className="text-3xl md:text-5xl font-bold">Real-time Operations Overview</h2>
-              <p className="text-slate-400 max-w-2xl font-light">
+              <h2 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-white via-slate-100 to-slate-350 bg-clip-text text-transparent">
+                Real-Time Operations Overview
+              </h2>
+              <p className="text-slate-450 max-w-2xl font-light text-base leading-relaxed">
                 Explore real-time data insights aggregated directly from our fleet operations and booking systems across the network.
               </p>
             </div>
             {!loadingStats && (
-              <div className="text-slate-400 text-xs font-medium border border-slate-850 bg-slate-950/60 rounded-xl px-4 py-3 flex items-center gap-2">
+              <div className="text-slate-400 text-xs font-semibold border border-slate-800/80 bg-slate-950/80 backdrop-blur-md rounded-2xl px-5 py-3.5 flex items-center gap-3 shadow-lg shadow-black/10">
+                <span className="flex h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
                 <span>Dataset size:</span>
-                <span className="text-cyan-400 font-bold">{(statsData?.totalBookings || 18289).toLocaleString()} bookings</span>
+                <span className="text-cyan-400 font-extrabold text-sm">{(statsData?.totalBookings || 18289).toLocaleString()} bookings</span>
               </div>
             )}
           </div>
@@ -347,8 +374,8 @@ export default function Home() {
                 ))}
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div className="lg:col-span-8 border border-slate-800 bg-slate-900/10 p-8 rounded-2xl h-[400px] animate-pulse" />
-                <div className="lg:col-span-4 border border-slate-800 bg-slate-900/10 p-8 rounded-2xl h-[400px] animate-pulse" />
+                <div className="lg:col-span-8 border border-slate-800 bg-slate-900/10 p-8 rounded-2xl h-[450px] animate-pulse" />
+                <div className="lg:col-span-4 border border-slate-800 bg-slate-900/10 p-8 rounded-2xl h-[450px] animate-pulse" />
               </div>
             </div>
           ) : (
@@ -356,46 +383,50 @@ export default function Home() {
               {/* Metrics Grid */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Metric 1 */}
-                <div className="border border-slate-800/80 bg-slate-900/15 p-6 rounded-2xl flex items-center gap-4 hover:border-indigo-500/20 transition-all duration-300">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
-                    <DirectionsCarIcon />
+                <div className="backdrop-blur-xl bg-slate-900/30 border border-slate-800/80 shadow-xl shadow-slate-950/10 hover:border-indigo-500/30 hover:shadow-indigo-500/5 hover:-translate-y-1 transition-all duration-300 p-6 rounded-2xl flex items-center gap-5 relative group overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/0 via-indigo-500/0 to-indigo-500/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500/10 to-indigo-500/20 text-indigo-450 border border-indigo-500/20 group-hover:scale-105 transition-transform duration-300">
+                    <DirectionsCarIcon fontSize="medium" />
                   </div>
                   <div>
-                    <p className="text-slate-450 text-xs font-semibold uppercase tracking-wider">Total Bookings</p>
-                    <h3 className="text-2xl font-bold text-white mt-1">{(statsData?.totalBookings || 0).toLocaleString()}</h3>
+                    <p className="text-slate-450 text-[11px] font-semibold uppercase tracking-wider">Total Bookings</p>
+                    <h3 className="text-2xl font-extrabold text-white mt-1 tracking-tight">{(statsData?.totalBookings || 0).toLocaleString()}</h3>
                   </div>
                 </div>
 
                 {/* Metric 2 */}
-                <div className="border border-slate-800/80 bg-slate-900/15 p-6 rounded-2xl flex items-center gap-4 hover:border-emerald-500/20 transition-all duration-300">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
-                    <CheckCircleIcon />
+                <div className="backdrop-blur-xl bg-slate-900/30 border border-slate-800/80 shadow-xl shadow-slate-950/10 hover:border-emerald-500/30 hover:shadow-emerald-500/5 hover:-translate-y-1 transition-all duration-300 p-6 rounded-2xl flex items-center gap-5 relative group overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/0 via-emerald-500/0 to-emerald-500/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/10 to-emerald-500/20 text-emerald-455 border border-emerald-500/20 group-hover:scale-105 transition-transform duration-300">
+                    <CheckCircleIcon fontSize="medium" />
                   </div>
                   <div>
-                    <p className="text-slate-450 text-xs font-semibold uppercase tracking-wider">Successful Rides</p>
-                    <h3 className="text-2xl font-bold text-white mt-1">{(statsData?.successRides || 0).toLocaleString()}</h3>
+                    <p className="text-slate-450 text-[11px] font-semibold uppercase tracking-wider">Successful Rides</p>
+                    <h3 className="text-2xl font-extrabold text-white mt-1 tracking-tight">{(statsData?.successRides || 0).toLocaleString()}</h3>
                   </div>
                 </div>
 
                 {/* Metric 3 */}
-                <div className="border border-slate-800/80 bg-slate-900/15 p-6 rounded-2xl flex items-center gap-4 hover:border-cyan-500/20 transition-all duration-300">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-400">
-                    <AnalyticsIcon />
+                <div className="backdrop-blur-xl bg-slate-900/30 border border-slate-800/80 shadow-xl shadow-slate-950/10 hover:border-cyan-500/30 hover:shadow-cyan-500/5 hover:-translate-y-1 transition-all duration-300 p-6 rounded-2xl flex items-center gap-5 relative group overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/0 via-cyan-500/0 to-cyan-500/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500/10 to-cyan-500/20 text-cyan-455 border border-cyan-500/20 group-hover:scale-105 transition-transform duration-300">
+                    <AnalyticsIcon fontSize="medium" />
                   </div>
                   <div>
-                    <p className="text-slate-455 text-xs font-semibold uppercase tracking-wider">Completion Rate</p>
-                    <h3 className="text-2xl font-bold text-white mt-1">{completionRate}</h3>
+                    <p className="text-slate-450 text-[11px] font-semibold uppercase tracking-wider">Completion Rate</p>
+                    <h3 className="text-2xl font-extrabold text-white mt-1 tracking-tight">{completionRate}</h3>
                   </div>
                 </div>
 
                 {/* Metric 4 */}
-                <div className="border border-slate-800/80 bg-slate-900/15 p-6 rounded-2xl flex items-center gap-4 hover:border-amber-500/20 transition-all duration-300">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
-                    <StarIcon />
+                <div className="backdrop-blur-xl bg-slate-900/30 border border-slate-800/80 shadow-xl shadow-slate-950/10 hover:border-amber-500/30 hover:shadow-amber-500/5 hover:-translate-y-1 transition-all duration-300 p-6 rounded-2xl flex items-center gap-5 relative group overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/0 via-amber-500/0 to-amber-500/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500/10 to-amber-500/20 text-amber-455 border border-amber-500/20 group-hover:scale-105 transition-transform duration-300">
+                    <StarIcon fontSize="medium" />
                   </div>
                   <div>
-                    <p className="text-slate-455 text-xs font-semibold uppercase tracking-wider">Avg driver Rating</p>
-                    <h3 className="text-2xl font-bold text-white mt-1">{statsData?.avgDriverRating?.toFixed(1) || '0.0'}</h3>
+                    <p className="text-slate-450 text-[11px] font-semibold uppercase tracking-wider">Avg Driver Rating</p>
+                    <h3 className="text-2xl font-extrabold text-white mt-1 tracking-tight">{statsData?.avgDriverRating?.toFixed(1) || '0.0'}</h3>
                   </div>
                 </div>
               </div>
@@ -403,38 +434,108 @@ export default function Home() {
               {/* Charts Section */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Vehicle Performance Bar Chart */}
-                <div className="lg:col-span-8 border border-slate-800/80 bg-[#090d16]/40 p-6 rounded-3xl backdrop-blur-md flex flex-col h-[450px]">
-                  <div className="mb-6 flex justify-between items-center">
+                <div className="lg:col-span-8 border border-slate-800/80 bg-slate-950/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl shadow-2xl shadow-black/30 flex flex-col h-[460px]">
+                  <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                      <h4 className="text-lg font-bold text-white">Vehicle Performance Analytics</h4>
-                      <p className="text-xs text-slate-500">Revenue (left, INR) and Bookings (right) distribution by vehicle category</p>
+                      <h4 className="text-lg font-bold text-white tracking-tight">Vehicle Performance Analytics</h4>
+                      <p className="text-xs text-slate-500 mt-1 font-light">Comparing Revenue (INR) and Bookings distribution by vehicle type</p>
+                    </div>
+                    {/* View Toggle */}
+                    <div className="flex bg-slate-900 border border-slate-800 p-1 rounded-xl text-[10px] font-bold uppercase tracking-wider self-end sm:self-center">
+                      <button 
+                        onClick={() => setChartView('combined')} 
+                        className={`px-3 py-2 rounded-lg transition-all cursor-pointer ${chartView === 'combined' ? 'bg-gradient-to-tr from-indigo-500 to-cyan-500 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-450 hover:text-white'}`}
+                      >
+                        Combined
+                      </button>
+                      <button 
+                        onClick={() => setChartView('revenue')} 
+                        className={`px-3 py-2 rounded-lg transition-all cursor-pointer ${chartView === 'revenue' ? 'bg-gradient-to-tr from-indigo-500 to-cyan-500 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-450 hover:text-white'}`}
+                      >
+                        Revenue
+                      </button>
+                      <button 
+                        onClick={() => setChartView('bookings')} 
+                        className={`px-3 py-2 rounded-lg transition-all cursor-pointer ${chartView === 'bookings' ? 'bg-gradient-to-tr from-indigo-500 to-cyan-500 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-450 hover:text-white'}`}
+                      >
+                        Bookings
+                      </button>
                     </div>
                   </div>
-                  <div className="flex-1 w-full min-h-0">
+                  <div className="flex-1 w-full min-h-[320px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={statsData?.revenueStats} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#6366f1" stopOpacity={0.85}/>
+                            <stop offset="100%" stopColor="#4f46e5" stopOpacity={0.15}/>
+                          </linearGradient>
+                          <linearGradient id="colorBookings" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#06b6d4" stopOpacity={0.85}/>
+                            <stop offset="100%" stopColor="#0891b2" stopOpacity={0.15}/>
+                          </linearGradient>
+                        </defs>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
-                        <XAxis dataKey="vehicleType" tickLine={false} axisLine={false} stroke="#64748b" style={{ fontSize: 11, fontWeight: 500 }} />
-                        <YAxis yAxisId="left" orientation="left" tickLine={false} axisLine={false} stroke="#6366f1" tickFormatter={(v) => `₹${v >= 10000000 ? (v / 10000000).toFixed(1) + 'Cr' : (v / 100000).toFixed(0) + 'L'}`} style={{ fontSize: 10 }} />
-                        <YAxis yAxisId="right" orientation="right" tickLine={false} axisLine={false} stroke="#06b6d4" style={{ fontSize: 10 }} />
-                        <Tooltip 
-                          contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', color: '#fff' }} 
-                          formatter={(value, name) => [name === 'totalRevenue' ? `₹${value.toLocaleString()}` : value.toLocaleString(), name === 'totalRevenue' ? 'Revenue' : 'Bookings']}
+                        <XAxis dataKey="vehicleType" tickLine={false} axisLine={false} stroke="#64748b" style={{ fontSize: 11, fontWeight: 550 }} />
+                        <YAxis 
+                          yAxisId="left" 
+                          orientation="left" 
+                          tickLine={false} 
+                          axisLine={false} 
+                          stroke="#6366f1" 
+                          tickFormatter={(v) => `₹${v >= 10000000 ? (v / 10000000).toFixed(1) + 'Cr' : (v / 100000).toFixed(0) + 'L'}`} 
+                          style={{ fontSize: 10, fontWeight: 500 }} 
                         />
-                        <Bar yAxisId="left" dataKey="totalRevenue" name="totalRevenue" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={20} />
-                        <Bar yAxisId="right" dataKey="totalBookings" name="totalBookings" fill="#06b6d4" radius={[4, 4, 0, 0]} barSize={20} />
+                        <YAxis 
+                          yAxisId="right" 
+                          orientation="right" 
+                          tickLine={false} 
+                          axisLine={false} 
+                          stroke="#06b6d4" 
+                          style={{ fontSize: 10, fontWeight: 500 }} 
+                        />
+                        <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.015)' }} />
+                        {(chartView === 'combined' || chartView === 'revenue') && (
+                          <Bar 
+                            yAxisId="left" 
+                            dataKey="totalRevenue" 
+                            name="totalRevenue" 
+                            fill="url(#colorRevenue)" 
+                            radius={[5, 5, 0, 0]} 
+                            barSize={chartView === 'combined' ? 14 : 26} 
+                          />
+                        )}
+                        {(chartView === 'combined' || chartView === 'bookings') && (
+                          <Bar 
+                            yAxisId="right" 
+                            dataKey="totalBookings" 
+                            name="totalBookings" 
+                            fill="url(#colorBookings)" 
+                            radius={[5, 5, 0, 0]} 
+                            barSize={chartView === 'combined' ? 14 : 26} 
+                          />
+                        )}
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
                 </div>
 
                 {/* Booking Status Distribution Donut Chart */}
-                <div className="lg:col-span-4 border border-slate-800/80 bg-[#090d16]/40 p-6 rounded-3xl backdrop-blur-md flex flex-col h-[450px]">
+                <div className="lg:col-span-4 border border-slate-800/80 bg-slate-950/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl shadow-2xl shadow-black/30 flex flex-col h-[460px]">
                   <div>
-                    <h4 className="text-lg font-bold text-white">Booking Status Distribution</h4>
-                    <p className="text-xs text-slate-500">Breakdown of ride booking outcomes</p>
+                    <h4 className="text-lg font-bold text-white tracking-tight">Booking Outflow</h4>
+                    <p className="text-xs text-slate-500 mt-1 font-light">Breakdown of ride booking outcomes across database</p>
                   </div>
-                  <div className="flex-1 w-full min-h-0 flex items-center justify-center relative">
+                  <div className="flex-1 w-full min-h-[280px] flex items-center justify-center relative">
+                    {/* Glowing ring backdrop */}
+                    <div className="absolute w-[200px] h-[200px] bg-indigo-500/5 rounded-full blur-[80px] pointer-events-none" />
+                    
+                    {/* Center details */}
+                    <div className="absolute flex flex-col items-center justify-center pointer-events-none">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Success Rate</span>
+                      <span className="text-3xl font-black bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent mt-0.5">{completionRate}</span>
+                    </div>
+
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
@@ -443,9 +544,11 @@ export default function Home() {
                           nameKey="status"
                           cx="50%"
                           cy="50%"
-                          innerRadius={60}
-                          outerRadius={85}
+                          innerRadius={65}
+                          outerRadius={88}
                           paddingAngle={3}
+                          stroke="#070b13"
+                          strokeWidth={2}
                         >
                           {statsData?.statusDistribution?.map((entry, index) => {
                             const colors = {
@@ -459,30 +562,33 @@ export default function Home() {
                             return <Cell key={`cell-${index}`} fill={color} />
                           })}
                         </Pie>
-                        <Tooltip contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', color: '#fff' }} />
+                        <Tooltip 
+                          contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', color: '#fff' }} 
+                          formatter={(value, name) => [value.toLocaleString(), name]}
+                        />
                       </PieChart>
                     </ResponsiveContainer>
                   </div>
                   {/* Custom Legend */}
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-4 text-[10px] font-medium text-slate-400">
-                    <div className="flex items-center gap-1.5">
-                      <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-4 text-[10px] font-semibold text-slate-450 border-t border-slate-900 pt-4">
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-[#10b981]" />
                       <span>Success</span>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="h-2 w-2 rounded-full bg-rose-500" />
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-[#f43f5e]" />
                       <span>Cancel (Cust)</span>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="h-2 w-2 rounded-full bg-rose-300" />
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-[#fda4af]" />
                       <span>Cancel (Driver)</span>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="h-2 w-2 rounded-full bg-orange-500" />
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-[#f97316]" />
                       <span>Incomplete</span>
                     </div>
-                    <div className="flex items-center gap-1.5 col-span-2">
-                      <span className="h-2 w-2 rounded-full bg-slate-400" />
+                    <div className="flex items-center gap-2 col-span-2">
+                      <span className="h-2 w-2 rounded-full bg-[#94a3b8]" />
                       <span>Driver Not Found</span>
                     </div>
                   </div>
