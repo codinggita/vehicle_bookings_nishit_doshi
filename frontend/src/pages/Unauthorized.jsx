@@ -13,7 +13,7 @@ export default function Unauthorized() {
       <LockIcon sx={{ fontSize: 64, color: 'error.main' }} />
       <Typography variant="h4" fontWeight={600}>403 - Unauthorized</Typography>
       <Typography variant="body1" color="text.secondary">You don't have permission to access this page.</Typography>
-      <Button variant="contained" onClick={() => navigate('/')}>Back to Dashboard</Button>
+      <Button variant="contained" onClick={() => navigate('/dashboard')}>Back to Dashboard</Button>
     </Box>
   )
 }

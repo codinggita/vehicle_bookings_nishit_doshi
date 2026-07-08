@@ -6,6 +6,7 @@ import { Loader } from '../components/ui'
 
 const Login = lazy(() => import('../pages/auth/Login'))
 const Register = lazy(() => import('../pages/auth/Register'))
+const Home = lazy(() => import('../pages/Home'))
 const Dashboard = lazy(() => import('../pages/dashboard/Dashboard'))
 const Users = lazy(() => import('../pages/users/Users'))
 const Profile = lazy(() => import('../pages/profile/Profile'))
@@ -24,10 +25,11 @@ const LazyLoad = ({ children }) => <Suspense fallback={<Loader />}>{children}</S
 export default function AppRoutes() {
   return (
     <Routes>
+      <Route path="/" element={<LazyLoad><Home /></LazyLoad>} />
       <Route path="/login" element={<LazyLoad><Login /></LazyLoad>} />
       <Route path="/register" element={<LazyLoad><Register /></LazyLoad>} />
       <Route path="/unauthorized" element={<LazyLoad><Unauthorized /></LazyLoad>} />
-      <Route path="/" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+      <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
         <Route index element={<LazyLoad><Dashboard /></LazyLoad>} />
         <Route path="users" element={<ProtectedRoute roles={['admin']}><LazyLoad><Users /></LazyLoad></ProtectedRoute>} />
         <Route path="bookings" element={<LazyLoad><Bookings /></LazyLoad>} />

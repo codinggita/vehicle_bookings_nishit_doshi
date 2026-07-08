@@ -119,26 +119,26 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 )
 
 const adminNavItems = [
-  { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
-  { text: 'Users', icon: <PeopleIcon />, path: '/users' },
-  { text: 'Bookings', icon: <DirectionsCarIcon />, path: '/bookings' },
-  { text: 'Search', icon: <SearchIcon />, path: '/search' },
-  { text: 'Customers', icon: <GroupIcon />, path: '/customers' },
-  { text: 'Vehicles', icon: <TimeToLeaveIcon />, path: '/vehicles' },
-  { text: 'Payments', icon: <PaymentIcon />, path: '/payments' },
-  { text: 'Ratings', icon: <StarIcon />, path: '/ratings' },
-  { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
+  { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+  { text: 'Users', icon: <PeopleIcon />, path: '/dashboard/users' },
+  { text: 'Bookings', icon: <DirectionsCarIcon />, path: '/dashboard/bookings' },
+  { text: 'Search', icon: <SearchIcon />, path: '/dashboard/search' },
+  { text: 'Customers', icon: <GroupIcon />, path: '/dashboard/customers' },
+  { text: 'Vehicles', icon: <TimeToLeaveIcon />, path: '/dashboard/vehicles' },
+  { text: 'Payments', icon: <PaymentIcon />, path: '/dashboard/payments' },
+  { text: 'Ratings', icon: <StarIcon />, path: '/dashboard/ratings' },
+  { text: 'Analytics', icon: <AnalyticsIcon />, path: '/dashboard/analytics' },
 ]
 
 const userNavItems = [
-  { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
-  { text: 'Bookings', icon: <DirectionsCarIcon />, path: '/bookings' },
-  { text: 'Search', icon: <SearchIcon />, path: '/search' },
+  { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+  { text: 'Bookings', icon: <DirectionsCarIcon />, path: '/dashboard/bookings' },
+  { text: 'Search', icon: <SearchIcon />, path: '/dashboard/search' },
 ]
 
 const bottomNavItems = [
-  { text: 'Profile', icon: <PersonIcon />, path: '/profile' },
-  { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
+  { text: 'Profile', icon: <PersonIcon />, path: '/dashboard/profile' },
+  { text: 'Settings', icon: <SettingsIcon />, path: '/dashboard/settings' },
 ]
 
 export default function DashboardLayout() {
@@ -184,10 +184,10 @@ export default function DashboardLayout() {
             </IconButton>
           </Tooltip>
           <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
-            <MenuItem onClick={() => { setAnchorEl(null); navigate('/profile') }}>
+            <MenuItem onClick={() => { setAnchorEl(null); navigate('/dashboard/profile') }}>
               <PersonIcon sx={{ mr: 1 }} /> Profile
             </MenuItem>
-            <MenuItem onClick={() => { setAnchorEl(null); navigate('/settings') }}>
+            <MenuItem onClick={() => { setAnchorEl(null); navigate('/dashboard/settings') }}>
               <SettingsIcon sx={{ mr: 1 }} /> Settings
             </MenuItem>
             <Divider />

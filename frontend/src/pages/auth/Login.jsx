@@ -21,7 +21,7 @@ export default function Login() {
   const { loading, error, isAuthenticated } = useSelector((state) => state.auth)
 
   useEffect(() => {
-    if (isAuthenticated) navigate('/')
+    if (isAuthenticated) navigate('/dashboard')
   }, [isAuthenticated, navigate])
 
   useEffect(() => {
