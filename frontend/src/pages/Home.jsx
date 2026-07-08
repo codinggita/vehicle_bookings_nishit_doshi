@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import SEO from '../components/SEO'
 import SchemaOrg from '../components/SchemaOrg'
 import { logout } from '../store/slices/authSlice'
+import { getPublicDashboardStats } from '../services/publicService'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
 // MUI Icons
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar'
@@ -39,6 +41,34 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState('electric')
   const [faqOpen, setFaqOpen] = useState(null)
+
+  const [statsData, setStatsData] = useState(null)
+  const [loadingStats, setLoadingStats] = useState(true)
+
+  useEffect(() => {
+    let active = true
+    const fetchStats = async () => {
+      try {
+        const data = await getPublicDashboardStats()
+        if (active && data?.success) {
+          setStatsData(data.data)
+        }
+      } catch (err) {
+        console.error('Failed to fetch public stats:', err)
+      } finally {
+        if (active) setLoadingStats(false)
+      }
+    }
+    fetchStats()
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const completionRate = useMemo(() => {
+    if (!statsData || !statsData.totalBookings) return '0%'
+    return ((statsData.successRides / statsData.totalBookings) * 100).toFixed(1) + '%'
+  }, [statsData])
 
   const handleLogout = () => {
     dispatch(logout())
@@ -278,27 +308,188 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="border-y border-slate-800/60 bg-[#070b13] py-16 px-6">
+      {/* Live System Dashboard Section */}
+      <section id="live-dashboard" className="border-y border-slate-800/60 bg-[#070b13] py-24 px-6 relative">
+        <div className="absolute top-[20%] left-[10%] w-[35%] h-[35%] bg-indigo-500/5 rounded-full blur-[130px] pointer-events-none" />
+        <div className="absolute bottom-[20%] right-[10%] w-[35%] h-[35%] bg-cyan-500/5 rounded-full blur-[130px] pointer-events-none" />
+        
         <div className="container mx-auto max-w-7xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <h2 className="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">10k+</h2>
-              <p className="text-slate-400 text-sm mt-2 font-medium">Happy Drivers</p>
+          {/* Section Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs font-semibold text-emerald-400 tracking-wide uppercase">
+                <span className="flex h-2 w-2 rounded-full bg-emerald-400" />
+                <span className="flex h-2 w-2 absolute rounded-full bg-emerald-400 animate-ping" />
+                Live System Dashboard
+              </div>
+              <h2 className="text-3xl md:text-5xl font-bold">Real-time Operations Overview</h2>
+              <p className="text-slate-400 max-w-2xl font-light">
+                Explore real-time data insights aggregated directly from our fleet operations and booking systems across the network.
+              </p>
             </div>
-            <div>
-              <h2 className="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">500+</h2>
-              <p className="text-slate-400 text-sm mt-2 font-medium">Premium Vehicles</p>
-            </div>
-            <div>
-              <h2 className="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">50+</h2>
-              <p className="text-slate-400 text-sm mt-2 font-medium">Cities Covered</p>
-            </div>
-            <div>
-              <h2 className="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">4.95</h2>
-              <p className="text-slate-400 text-sm mt-2 font-medium">Average Star Rating</p>
-            </div>
+            {!loadingStats && (
+              <div className="text-slate-400 text-xs font-medium border border-slate-850 bg-slate-950/60 rounded-xl px-4 py-3 flex items-center gap-2">
+                <span>Dataset size:</span>
+                <span className="text-cyan-400 font-bold">{(statsData?.totalBookings || 18289).toLocaleString()} bookings</span>
+              </div>
+            )}
           </div>
+
+          {/* Skeletons / Loader */}
+          {loadingStats ? (
+            <div className="space-y-12">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="border border-slate-800 bg-slate-900/10 p-6 rounded-2xl h-28 animate-pulse flex flex-col justify-between">
+                    <div className="h-4 bg-slate-800 rounded w-2/3" />
+                    <div className="h-8 bg-slate-800 rounded w-1/2" />
+                  </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div className="lg:col-span-8 border border-slate-800 bg-slate-900/10 p-8 rounded-2xl h-[400px] animate-pulse" />
+                <div className="lg:col-span-4 border border-slate-800 bg-slate-900/10 p-8 rounded-2xl h-[400px] animate-pulse" />
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-12">
+              {/* Metrics Grid */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Metric 1 */}
+                <div className="border border-slate-800/80 bg-slate-900/15 p-6 rounded-2xl flex items-center gap-4 hover:border-indigo-500/20 transition-all duration-300">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
+                    <DirectionsCarIcon />
+                  </div>
+                  <div>
+                    <p className="text-slate-450 text-xs font-semibold uppercase tracking-wider">Total Bookings</p>
+                    <h3 className="text-2xl font-bold text-white mt-1">{(statsData?.totalBookings || 0).toLocaleString()}</h3>
+                  </div>
+                </div>
+
+                {/* Metric 2 */}
+                <div className="border border-slate-800/80 bg-slate-900/15 p-6 rounded-2xl flex items-center gap-4 hover:border-emerald-500/20 transition-all duration-300">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
+                    <CheckCircleIcon />
+                  </div>
+                  <div>
+                    <p className="text-slate-450 text-xs font-semibold uppercase tracking-wider">Successful Rides</p>
+                    <h3 className="text-2xl font-bold text-white mt-1">{(statsData?.successRides || 0).toLocaleString()}</h3>
+                  </div>
+                </div>
+
+                {/* Metric 3 */}
+                <div className="border border-slate-800/80 bg-slate-900/15 p-6 rounded-2xl flex items-center gap-4 hover:border-cyan-500/20 transition-all duration-300">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-400">
+                    <AnalyticsIcon />
+                  </div>
+                  <div>
+                    <p className="text-slate-455 text-xs font-semibold uppercase tracking-wider">Completion Rate</p>
+                    <h3 className="text-2xl font-bold text-white mt-1">{completionRate}</h3>
+                  </div>
+                </div>
+
+                {/* Metric 4 */}
+                <div className="border border-slate-800/80 bg-slate-900/15 p-6 rounded-2xl flex items-center gap-4 hover:border-amber-500/20 transition-all duration-300">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
+                    <StarIcon />
+                  </div>
+                  <div>
+                    <p className="text-slate-455 text-xs font-semibold uppercase tracking-wider">Avg driver Rating</p>
+                    <h3 className="text-2xl font-bold text-white mt-1">{statsData?.avgDriverRating?.toFixed(1) || '0.0'}</h3>
+                  </div>
+                </div>
+              </div>
+
+              {/* Charts Section */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                {/* Vehicle Performance Bar Chart */}
+                <div className="lg:col-span-8 border border-slate-800/80 bg-[#090d16]/40 p-6 rounded-3xl backdrop-blur-md flex flex-col h-[450px]">
+                  <div className="mb-6 flex justify-between items-center">
+                    <div>
+                      <h4 className="text-lg font-bold text-white">Vehicle Performance Analytics</h4>
+                      <p className="text-xs text-slate-500">Revenue (left, INR) and Bookings (right) distribution by vehicle category</p>
+                    </div>
+                  </div>
+                  <div className="flex-1 w-full min-h-0">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={statsData?.revenueStats} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
+                        <XAxis dataKey="vehicleType" tickLine={false} axisLine={false} stroke="#64748b" style={{ fontSize: 11, fontWeight: 500 }} />
+                        <YAxis yAxisId="left" orientation="left" tickLine={false} axisLine={false} stroke="#6366f1" tickFormatter={(v) => `₹${v >= 10000000 ? (v / 10000000).toFixed(1) + 'Cr' : (v / 100000).toFixed(0) + 'L'}`} style={{ fontSize: 10 }} />
+                        <YAxis yAxisId="right" orientation="right" tickLine={false} axisLine={false} stroke="#06b6d4" style={{ fontSize: 10 }} />
+                        <Tooltip 
+                          contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', color: '#fff' }} 
+                          formatter={(value, name) => [name === 'totalRevenue' ? `₹${value.toLocaleString()}` : value.toLocaleString(), name === 'totalRevenue' ? 'Revenue' : 'Bookings']}
+                        />
+                        <Bar yAxisId="left" dataKey="totalRevenue" name="totalRevenue" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={20} />
+                        <Bar yAxisId="right" dataKey="totalBookings" name="totalBookings" fill="#06b6d4" radius={[4, 4, 0, 0]} barSize={20} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Booking Status Distribution Donut Chart */}
+                <div className="lg:col-span-4 border border-slate-800/80 bg-[#090d16]/40 p-6 rounded-3xl backdrop-blur-md flex flex-col h-[450px]">
+                  <div>
+                    <h4 className="text-lg font-bold text-white">Booking Status Distribution</h4>
+                    <p className="text-xs text-slate-500">Breakdown of ride booking outcomes</p>
+                  </div>
+                  <div className="flex-1 w-full min-h-0 flex items-center justify-center relative">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={statsData?.statusDistribution}
+                          dataKey="count"
+                          nameKey="status"
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={60}
+                          outerRadius={85}
+                          paddingAngle={3}
+                        >
+                          {statsData?.statusDistribution?.map((entry, index) => {
+                            const colors = {
+                              'Success': '#10b981',
+                              'Canceled by Customer': '#f43f5e',
+                              'Canceled by Driver': '#fda4af',
+                              'Incomplete': '#f97316',
+                              'Driver Not Found': '#94a3b8'
+                            }
+                            const color = colors[entry.status] || '#6366f1'
+                            return <Cell key={`cell-${index}`} fill={color} />
+                          })}
+                        </Pie>
+                        <Tooltip contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', color: '#fff' }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  {/* Custom Legend */}
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-4 text-[10px] font-medium text-slate-400">
+                    <div className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                      <span>Success</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-rose-500" />
+                      <span>Cancel (Cust)</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-rose-300" />
+                      <span>Cancel (Driver)</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-orange-500" />
+                      <span>Incomplete</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 col-span-2">
+                      <span className="h-2 w-2 rounded-full bg-slate-400" />
+                      <span>Driver Not Found</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
